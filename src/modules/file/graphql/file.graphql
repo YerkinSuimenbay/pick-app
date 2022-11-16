@@ -1,0 +1,20 @@
+enum FileType {
+  image
+  file
+}
+
+type File {
+  id: Int!
+  type: String!
+  name: String!
+  path: String
+  extension: String!
+  size: Int!
+  mimeType: String!
+  url: String!
+  createdAt: Date!
+}
+
+type Mutation {
+  singleFileUpload(file: Upload!, type: FileType!): File!
+}

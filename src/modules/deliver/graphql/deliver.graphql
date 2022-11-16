@@ -1,0 +1,48 @@
+enum DeliverStatus {
+  pickup
+  intransit
+  delivered
+}
+
+type Deliver {
+  from: String!
+  to: String!
+  date: Date!
+  flight: String!
+  maximumWeight: Int!
+  fee: Int!
+  comment: String
+  deliver: DeliverStatus!
+}
+
+input DeliverInput {
+  from: String!
+  to: String!
+  date: Date!
+  flight: String!
+  maximumWeight: Int!
+  fee: Int!
+  comment: String
+  deliver: DeliverStatus!
+}
+
+input DeliversFilter {
+  from: String!
+  to: String!
+  date: String!
+}
+
+type DeliversResponse {
+  list: [Deliver!]!
+  total: Int!
+}
+
+type Query {
+  # deliver(id: Int!): Deliver
+  delivers(filter: DeliversFilter): DeliversResponse!
+}
+
+type Mutation {
+  createDeliver(input: DeliverInput!): Boolean!
+  cancelDeliver(id: Int!): Boolean!
+}

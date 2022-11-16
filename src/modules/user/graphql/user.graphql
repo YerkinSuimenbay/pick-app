@@ -1,0 +1,26 @@
+type User {
+  id: Int!
+  name: String!
+  phone: String!
+  email: String!
+  idType: String!
+  idNumber: String!
+  createdAt: Date!
+  updatedAt: Date!
+}
+
+input UsersFilter {
+  search: String
+  # status: UserStatus
+}
+
+type UsersResponse {
+  list: [User!]!
+  total: Int!
+}
+
+type Query {
+  # users(filter: UsersFilter, pagination: PaginationInput): UsersResponse!
+  # userByAdmin(id: Int!): User!
+  me: User!
+}

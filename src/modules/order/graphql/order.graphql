@@ -1,0 +1,12 @@
+type Mutation {
+  bookTheDelivery(sendId: Int!, deliverId: Int!): Boolean! # done by deliver
+  takeMyOrder(deliverId: Int!, sendId: Int!): Boolean! # done by send
+  
+  changeToNextStatus(sendId: Int!): Boolean! # done by send
+  
+  acceptOrderBySend(orderId: Int!): Boolean!
+  declineOrderBySend(orderId: Int!): Boolean!
+
+  acceptOrderByDeliver(orderId: Int!): Boolean!
+  declineOrderByDeliver(orderId: Int!): Boolean!
+}

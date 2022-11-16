@@ -1,0 +1,23 @@
+input RegisterInput {
+  name: String!
+  email: String!
+  password: String!
+  phone: String!
+  idType: String!
+  idNumber: String!
+}
+
+type AuthResponse {
+  token: String!
+  refreshToken: String!
+  user: User!
+}
+
+type Query {
+  me: User!
+}
+
+type Mutation {
+  register(input: RegisterInput!): AuthResponse!
+  login(email: String!, password: String!): AuthResponse!
+}

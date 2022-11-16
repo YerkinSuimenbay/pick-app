@@ -1,0 +1,25 @@
+directive @admin on OBJECT | FIELD_DEFINITION
+
+# scalar DateTime
+scalar Date
+
+scalar Upload
+
+input PaginationInput {
+  offset: Int
+  limit: Int
+}
+
+input PeriodInput {
+  startDate: Date
+  endDate: Date
+}
+
+type Query {
+  test: String
+}
+
+enum Lang {
+  ru
+  kk
+}

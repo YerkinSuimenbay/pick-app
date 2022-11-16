@@ -1,0 +1,53 @@
+enum SendStatus {
+  pickup
+  intransit
+  delivered
+}
+
+type Send {
+  # user: User
+  from: String!
+  to: String!
+  sendDate: Date!
+  deliveryDate: Date!
+  fee: Int!
+  comment: String
+  packageContents: String!
+  packageWeight: Int!
+  packageImage: File!
+  status: SendStatus!
+}
+
+input SendInput {
+  from: String!
+  to: String!
+  sendDate: Date!
+  deliveryDate: Date!
+  fee: Int!
+  comment: String
+  packageContents: String!
+  packageWeight: Int!
+  packageImageId: Int!
+}
+
+type SendsResponse {
+  list: [Send!]!
+  total: Int!
+}
+
+input SendsFilter {
+  from: String!
+  to: String!
+  date: String!
+  maximumWeight: Int
+}
+
+type Query {
+  # mySends:SendsResponse!
+  sends(filter: SendsFilter): SendsResponse!
+}
+
+type Mutation {
+  createSend(input: SendInput!): Send!
+  cancelSend(id: Int!): Boolean!
+}
