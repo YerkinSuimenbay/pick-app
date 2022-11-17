@@ -13,6 +13,13 @@ type AuthResponse {
   user: User!
 }
 
+input ChangePasswordInput {
+  currentPassword: String!
+  newPassword: String!
+  repeatNewPassword: String!
+}
+
+
 type Query {
   me: User!
 }
@@ -20,4 +27,5 @@ type Query {
 type Mutation {
   register(input: RegisterInput!): AuthResponse!
   login(email: String!, password: String!): AuthResponse!
+  changePassword(input: ChangePasswordInput!): Boolean!
 }

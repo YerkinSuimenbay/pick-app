@@ -1,0 +1,56 @@
+enum PackageStatus {
+  new
+  pickup
+  intransit
+  delivered
+  canceled
+  archived
+}
+
+type Package {
+  user: User
+  from: String!
+  to: String!
+  sendDate: Date!
+  deliveryDate: Date!
+  fee: Int!
+  comment: String
+  contents: String!
+  weight: Int!
+  images: [File!]!
+  status: PackageStatus!
+}
+
+input PackageInput {
+  from: String!
+  to: String!
+  sendDate: Date!
+  deliveryDate: Date!
+  fee: Int!
+  comment: String
+  contents: String!
+  weight: Int!
+  imageIds: [Int!]!
+}
+
+type PackagesResponse {
+  list: [Package!]!
+  total: Int!
+}
+
+input PackagesFilter {
+  from: String!
+  to: String!
+  date: String!
+  maximumWeight: Int
+}
+
+type Query {
+  # mySends:SendsResponse!
+  packages(filter: PackagesFilter): PackagesResponse!
+}
+
+type Mutation {
+  createPackage(input: PackageInput!): Package!
+  cancelPackage(id: Int!): Boolean!
+}

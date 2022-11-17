@@ -11,9 +11,9 @@ import { UserModule } from './modules/user/user.module'
 import { FileModule } from './modules/file/file.module'
 import { AuthModule } from './modules/auth/auth.module'
 import { StorageModule } from './modules/storage/storage.module'
-import { SendModule } from './modules/send/send.module'
-import { DeliverModule } from './modules/deliver/deliver.module'
 import { OrderModule } from './modules/order/order.module'
+import { PackageModule } from './modules/package/package.module'
+import { CourierModule } from './modules/courier/courier.module'
 
 @Module({
   imports: [
@@ -32,8 +32,8 @@ import { OrderModule } from './modules/order/order.module'
     UserModule,
     FileModule,
     StorageModule.register(),
-    SendModule,
-    DeliverModule,
+    PackageModule,
+    CourierModule,
     OrderModule,
   ],
 })

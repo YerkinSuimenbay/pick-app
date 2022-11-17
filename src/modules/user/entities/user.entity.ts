@@ -2,6 +2,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -36,6 +37,7 @@ export class User {
   idNumber: string
 
   @OneToMany(() => FileEntity, (file) => file.id, { nullable: true })
+  @JoinColumn({ name: 'id_images_ids' })
   idImages: FileEntity[] | null
 
   @Column({ name: 'is_admin', default: false })

@@ -1,6 +1,9 @@
+import { User } from './../user/entities/user.entity'
 import { Args, Mutation, Resolver } from '@nestjs/graphql'
+
 import { AuthService } from './services/auth.service'
-import { RegisterInputDto } from './dto/register-input.dto'
+import { AuthUser, CurrentUser } from './decorators'
+import { ChangePasswordInputDto, RegisterInputDto } from './dto'
 
 @Resolver()
 export class AuthResolver {
@@ -8,12 +11,20 @@ export class AuthResolver {
 
   @Mutation()
   register(@Args('input') input: RegisterInputDto) {
-    console.log('gege')
     return this.authService.register(input)
   }
 
   @Mutation()
   login(@Args('email') email: string, @Args('password') password: string) {
     return this.authService.login(email, password)
+  }
+
+  @Mutation()
+  @AuthUser()
+  changePassword(
+    @Args('input') input: ChangePasswordInputDto,
+    @CurrentUser() user: User,
+  ) {
+    return this.authService.changePassword(input, user)
   }
 }

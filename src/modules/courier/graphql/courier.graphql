@@ -1,0 +1,41 @@
+type Courier { # TODO: fix optionals
+  user: User
+  from: String!
+  to: String!
+  date: Date!
+  flight: String!
+  maximumWeight: Int!
+  fee: Int!
+  comment: String
+}
+
+input CourierInput {
+  from: String!
+  to: String!
+  date: Date!
+  flight: String!
+  maximumWeight: Int!
+  fee: Int!
+  comment: String
+}
+
+input CouriersFilter {
+  from: String!
+  to: String!
+  date: Date!
+}
+
+type CouriersResponse {
+  list: [Courier!]!
+  total: Int!
+}
+
+type Query {
+  # courier(id: Int!): Courier
+  couriers(filter: CouriersFilter): CouriersResponse!
+}
+
+type Mutation {
+  createCourier(input: CourierInput!): Boolean!
+  cancelCourier(id: Int!): Boolean!
+}

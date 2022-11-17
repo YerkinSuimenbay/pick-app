@@ -19,8 +19,19 @@ type UsersResponse {
   total: Int!
 }
 
+input UpdateAccountInput {
+  name: String!
+  phone: String!
+  email: String!
+  description: String!
+}
+
 type Query {
   # users(filter: UsersFilter, pagination: PaginationInput): UsersResponse!
   # userByAdmin(id: Int!): User!
   me: User!
+}
+
+type Mutation {
+  updateAccount(input: UpdateAccountInput!): Boolean!
 }

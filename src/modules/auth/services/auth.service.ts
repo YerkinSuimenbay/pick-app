@@ -1,3 +1,4 @@
+import { ChangePasswordInputDto } from './../dto/change-password-input.dto'
 import { ConfigService } from '@nestjs/config'
 import { JwtService } from '@nestjs/jwt'
 import {
@@ -55,6 +56,28 @@ export class AuthService {
     const { token, refreshToken } = this.generateToken(payload)
 
     return { token, refreshToken, user }
+  }
+
+  async changePassword(input: ChangePasswordInputDto, user: User) {
+    const isValid = await this.validatePassword(
+      input.currentPassword,
+      user.password,
+    )
+
+    if (!isValid) {
+      throw new BadRequestException('Invalid password')
+    }
+
+    if (input.newPassword !== input.repeatNewPassword) {
+      throw new BadRequestException(
+        'newPassword and repeatedNewPassword do not match',
+      )
+    }
+
+    const hashedNewPassword = await this.hashPassword(input.newPassword)
+    await this.userService.changePassword(user, hashedNewPassword)
+
+    return true
   }
 
   hashPassword(password: string) {

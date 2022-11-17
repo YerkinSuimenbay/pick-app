@@ -22,6 +22,12 @@ export class UserService {
     const user = this.userRepository.create(input)
     return this.userRepository.save(user)
   }
+
+  changePassword(user: User, newPassword: string) {
+    user.password = newPassword
+    return this.userRepository.save(user)
+  }
+
   me() {
     // const user = this.userRepository.create({
     //   name: 'test',

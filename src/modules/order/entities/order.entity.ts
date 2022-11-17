@@ -7,26 +7,53 @@ import {
   Unique,
 } from 'typeorm'
 
-import { Send } from '../../send/entities/send.entity'
-import { Deliver } from '../../deliver/entities'
+import { Package } from '../../package/entities/package.entity'
+import { Courier } from '../../courier/entities'
 
 @Entity({ name: 'orders' })
-@Unique(['sendId', 'deliverId'])
+@Unique(['packageId', 'courierId'])
 export class Order {
   @PrimaryGeneratedColumn()
   id: number
 
-  @Column({ name: 'send_id' })
-  sendId: number
+  @Column({ name: 'package_id' })
+  packageId: number
 
-  @Column({ name: 'deliver_id' })
-  deliverId: number
+  @ManyToOne(() => Package, (pack) => pack.packageToCouriers, {
+    onDelete: 'SET NULL',
+    nullable: true,
+  })
+  @JoinColumn({ name: 'package_id' })
+  package: Package | null
 
-  @ManyToOne(() => Send, (send) => send.sendToDelivers)
-  @JoinColumn({ name: 'send_id' })
-  send: Send
+  @Column({ name: 'courier_id' })
+  courierId: number
 
-  @ManyToOne(() => Deliver, (deliver) => deliver.sendToDelivers)
-  @JoinColumn({ name: 'deliver_id' })
-  deliver: Deliver
+  @ManyToOne(() => Courier, (courier) => courier.packageToCouriers, {
+    onDelete: 'SET NULL',
+    nullable: true,
+  })
+  @JoinColumn({ name: 'courier_id' })
+  courier: Courier | null
+
+  @Column({ name: 'ordered_by_courier' })
+  orderedByCourier: boolean
+
+  @Column({ name: 'pick_up_date', nullable: true })
+  pickUpDate: Date | null
+
+  @Column({ name: 'intransit_date', nullable: true })
+  intransitDate: Date | null
+
+  @Column({ name: 'delivered_date', nullable: true })
+  deliveredDate: Date | null
+
+  @Column({ name: 'canceled_date', nullable: true })
+  canceledDate: Date | null
+
+  @Column({ nullable: true })
+  rating: number | null // 1 2 3 4 5
+
+  @Column({ nullable: true })
+  comment: string | null
 }
