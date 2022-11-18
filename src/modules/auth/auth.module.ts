@@ -8,6 +8,8 @@ import { SessionEntity } from './entities/session.entity'
 import { AuthResolver } from './auth.resolver'
 import { AuthService } from './services'
 import { SessionService } from './services/session.service'
+import { JwtStrategy } from './strategies'
+import { RolesGuard } from './guards/role.guard'
 
 @Module({
   imports: [
@@ -25,7 +27,13 @@ import { SessionService } from './services/session.service'
     }),
     forwardRef(() => UserModule),
   ],
-  providers: [AuthResolver, AuthService, SessionService],
+  providers: [
+    AuthResolver,
+    AuthService,
+    SessionService,
+    JwtStrategy,
+    RolesGuard,
+  ],
   exports: [AuthService],
 })
 export class AuthModule {}

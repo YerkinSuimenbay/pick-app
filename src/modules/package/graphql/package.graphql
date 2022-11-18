@@ -8,7 +8,8 @@ enum PackageStatus {
 }
 
 type Package {
-  user: User
+  id: Int!
+  user: User!
   from: String!
   to: String!
   sendDate: Date!
@@ -17,7 +18,7 @@ type Package {
   comment: String
   contents: String!
   weight: Int!
-  images: [File!]!
+  images: [File!]
   status: PackageStatus!
 }
 

@@ -1,4 +1,3 @@
-import { ChangePasswordInputDto } from './../dto/change-password-input.dto'
 import { ConfigService } from '@nestjs/config'
 import { JwtService } from '@nestjs/jwt'
 import {
@@ -10,6 +9,7 @@ import {
 import * as bcrypt from 'bcrypt'
 
 import { SessionService } from './session.service'
+import { ChangePasswordInputDto } from './../dto/change-password-input.dto'
 
 import { UserService } from '../../user/services'
 import { RegisterInputDto } from '../dto/register-input.dto'

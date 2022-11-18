@@ -50,11 +50,11 @@ export class Package {
   @Column({ nullable: true })
   weight: number | null
 
-  @OneToMany(() => FileEntity, (file) => file.id, { nullable: true })
-  @JoinColumn({ name: 'image_ids' })
+  @OneToMany(() => FileEntity, (file) => file.packageImage, { nullable: true })
+  // @JoinColumn({ name: 'image_ids' })
   images: FileEntity[] | null
 
-  @Column('varchar')
+  @Column('varchar', { default: PackageStatus.new })
   status: PackageStatus
 
   @OneToMany(

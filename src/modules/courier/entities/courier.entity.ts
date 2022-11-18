@@ -26,7 +26,7 @@ export class Courier {
 
   // status: if user has incomplete courier cannot create new
 
-  @Column({ name: 'is_active' })
+  @Column({ name: 'is_active', default: true })
   isActive: boolean
 
   @Column()

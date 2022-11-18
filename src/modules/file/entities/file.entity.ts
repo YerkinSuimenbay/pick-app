@@ -32,15 +32,15 @@ export class FileEntity {
   mimeType: string
 
   // USER: ID IMAGE
-  @Column({ name: 'user_id', nullable: true })
-  userId: number | null
+  @Column({ name: 'user_id_image_id', nullable: true })
+  userIdImageId: number | null
 
   @ManyToOne(() => User, (user) => user.idImages, {
     onDelete: 'CASCADE',
     nullable: true,
   })
-  @JoinColumn({ name: 'user_id' })
-  user: User | null
+  @JoinColumn({ name: 'user_id_image_id' })
+  userIdImage: User | null
 
   // SEND: PACKAGE IMAGE
   @Column({ name: 'package_image_id', nullable: true })

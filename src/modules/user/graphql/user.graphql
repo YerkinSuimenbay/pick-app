@@ -5,6 +5,9 @@ type User {
   email: String!
   idType: String!
   idNumber: String!
+  idImages: [File!]
+  description: String
+  # rating: Int!
   createdAt: Date!
   updatedAt: Date!
 }
@@ -33,5 +36,5 @@ type Query {
 }
 
 type Mutation {
-  updateAccount(input: UpdateAccountInput!): Boolean!
+  updateAccount(input: UpdateAccountInput!): User!
 }

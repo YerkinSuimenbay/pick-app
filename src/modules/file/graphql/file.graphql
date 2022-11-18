@@ -1,11 +1,5 @@
-enum FileType {
-  image
-  file
-}
-
 type File {
   id: Int!
-  type: String!
   name: String!
   path: String
   extension: String!
@@ -16,5 +10,5 @@ type File {
 }
 
 type Mutation {
-  singleFileUpload(file: Upload!, type: FileType!): File!
+  singleFileUpload(file: Upload!): File!
 }

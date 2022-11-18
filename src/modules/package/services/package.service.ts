@@ -2,6 +2,8 @@ import { BadRequestException, Injectable } from '@nestjs/common'
 import { Repository } from 'typeorm'
 import { InjectRepository } from '@nestjs/typeorm'
 
+import { FileService } from './../../file/file.service'
+
 import { PackagesFilterDto } from '../dto/packages-filter.dto'
 import { PackageStatus } from '../enums/package-status.enum'
 import { PackageInputDto } from '../dto/package-input.dto'
@@ -12,64 +14,77 @@ import { Package } from '../entities'
 export class PackageService {
   constructor(
     @InjectRepository(Package)
-    private readonly PackageRepository: Repository<Package>,
+    private readonly packageRepository: Repository<Package>,
+    private readonly fileService: FileService,
   ) {}
 
-  findById(id: number) {
-    return this.PackageRepository.findOne({
+  async findByIdOrFail(id: number) {
+    const pack = await this.packageRepository.findOne({
       where: { id },
     })
-  }
 
-  find({ filter }: { filter?: PackagesFilterDto }) {
-    const { from, to, date, maximumWeight } = filter || {}
-
-    const qb = this.PackageRepository.createQueryBuilder(
-      'Package',
-    ).innerJoinAndSelect('Package.user', 'user')
-
-    if (from) {
-      qb.andWhere('Package.from = :from', { from }) // ?: lowercase
-    }
-    if (to) {
-      qb.andWhere('Package.to = :to', { to }) // ?: lowercase
-    }
-    if (date) {
-      qb.andWhere('Package.PackageDate = :date', { date }) // ?: fix this
-    }
-    if (maximumWeight) {
-      qb.andWhere('Package.packageWeight <= :maximumWeight', { maximumWeight })
-    }
-
-    return qb.getManyAndCount()
-  }
-
-  create(input: PackageInputDto, user: User) {
-    const PackageOrder = this.PackageRepository.create(input)
-    PackageOrder.user = user
-
-    return this.PackageRepository.save(PackageOrder)
-  }
-
-  async cancel(id: number, user: User) {
-    const Package = await this.findById(id)
-    if (!Package) {
+    if (!pack) {
       throw new BadRequestException(
         `Package order with id ${id} does not exist`,
       )
     }
 
-    if (Package.userId !== user.id) {
+    return pack
+  }
+
+  find({ filter }: { filter?: PackagesFilterDto }) {
+    const { from, to, date, maximumWeight } = filter || {}
+
+    const qb = this.packageRepository
+      .createQueryBuilder('package')
+      .innerJoinAndSelect('package.user', 'user')
+      .leftJoinAndSelect('user.idImages', 'idImages') // TODO: innerJoin
+      .leftJoinAndSelect('package.images', 'image')
+
+    if (from) {
+      qb.andWhere('package.from = :from', { from }) // ?: lowercase
+    }
+    if (to) {
+      qb.andWhere('package.to = :to', { to }) // ?: lowercase
+    }
+    if (date) {
+      qb.andWhere('package.sendDate >= :date', { date }) // ?: fix this
+    }
+    if (maximumWeight) {
+      qb.andWhere('package.weight <= :maximumWeight', { maximumWeight })
+    }
+
+    return qb.getManyAndCount()
+  }
+
+  async create(input: PackageInputDto, user: User) {
+    const { imageIds, ...packageInput } = input
+    const pack = this.packageRepository.create(packageInput)
+    const images = await this.fileService.findByIds(imageIds)
+
+    pack.user = user
+    pack.images = images
+
+    return this.packageRepository.save(pack)
+  }
+
+  async cancel(id: number, user: User) {
+    const pack = await this.findByIdOrFail(id)
+
+    if (pack.userId !== user.id) {
       throw new BadRequestException('You cannot cancel this order')
     }
 
-    if (Package.status !== PackageStatus.pickup) {
-      throw new BadRequestException('Order cannot be canceled')
+    if (
+      pack.status !== PackageStatus.new &&
+      pack.status !== PackageStatus.pickup
+    ) {
+      throw new BadRequestException('Package order cannot be canceled')
     }
 
-    Package.status = PackageStatus.canceled
+    pack.status = PackageStatus.canceled
 
-    await this.PackageRepository.save(Package)
+    await this.packageRepository.save(pack)
 
     return true
   }

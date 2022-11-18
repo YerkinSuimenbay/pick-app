@@ -1,11 +1,9 @@
 export class CourierInputDto {
   from: string
   to: string
-  sendDate: Date
-  deliveryDate: Date
-  fee: number
+  date: Date
+  flight?: string
+  fee?: number
   comment?: string
-  packageContents: string
-  packageWeight: number
-  packageImageId: number
+  maximumWeight?: number
 }

@@ -12,8 +12,11 @@ export class PackageResolver {
 
   @Query()
   @AuthUser()
-  packages(@Args('filter') filter: PackagesFilterDto) {
-    return this.packageService.find({ filter })
+  async packages(@Args('filter') filter: PackagesFilterDto) {
+    // TODO: exclude his own packages
+    const [list, total] = await this.packageService.find({ filter })
+
+    return { list, total }
   }
 
   @Mutation()

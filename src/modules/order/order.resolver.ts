@@ -12,6 +12,7 @@ export class OrderResolver {
   @Mutation()
   @AuthUser()
   bookTheDelivery(
+    // TODO: sendUser !== deliverUser
     @Args('sendId') sendId: number,
     @Args('deliverId') deliverId: number,
     @CurrentUser() user: User,
@@ -21,6 +22,7 @@ export class OrderResolver {
   @Mutation()
   @AuthUser()
   takeMyOrder(
+    // TODO: sendUser !== deliverUser
     @Args('sendId') sendId: number,
     @Args('deliverId') deliverId: number,
     @CurrentUser() user: User,

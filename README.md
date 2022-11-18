@@ -1,4 +1,4 @@
-## Kansonar Exam API
+## PickApp API
 
 ### Migrations
 

@@ -3,4 +3,7 @@ export class RegisterInputDto {
   email: string
   password: string
   phone: string
+  idType: string
+  idNumber: string
+  idImageIds: number[]
 }

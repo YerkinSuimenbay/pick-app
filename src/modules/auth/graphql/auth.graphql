@@ -5,6 +5,7 @@ input RegisterInput {
   phone: String!
   idType: String!
   idNumber: String!
+  idImageIds: [Int!]!
 }
 
 type AuthResponse {
@@ -17,11 +18,6 @@ input ChangePasswordInput {
   currentPassword: String!
   newPassword: String!
   repeatNewPassword: String!
-}
-
-
-type Query {
-  me: User!
 }
 
 type Mutation {
