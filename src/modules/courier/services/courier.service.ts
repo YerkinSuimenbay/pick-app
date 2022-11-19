@@ -1,7 +1,8 @@
-import { OrderService } from './../../order/order.service'
 import { BadRequestException, Injectable } from '@nestjs/common'
 import { Repository } from 'typeorm'
 import { InjectRepository } from '@nestjs/typeorm'
+
+import { OrderService } from '../../order/services/order.service'
 
 import { CourierInputDto } from '../dto/courier-input.dto'
 import { User } from '../../user/entities'
@@ -15,18 +16,6 @@ export class CourierService {
     private readonly courierRepository: Repository<Courier>,
     private readonly orderService: OrderService,
   ) {}
-
-  async findByIdOrFail(id: number) {
-    const courier = await this.courierRepository.findOne({
-      where: { id },
-    })
-
-    if (!courier) {
-      throw new BadRequestException(`Courier with id ${id} does not exist`)
-    }
-
-    return courier
-  }
 
   find({ filter }: { filter?: CouriersFilterDto }) {
     const { from, to, date } = filter || {}
@@ -47,6 +36,40 @@ export class CourierService {
     }
 
     return qb.getManyAndCount()
+  }
+
+  async findByIdAndUserOrFail(user: User, id: number) {
+    const courier = await this.courierRepository.findOne({
+      where: {
+        id,
+        user,
+      },
+      relations: ['user'],
+    })
+
+    if (!courier) {
+      throw new BadRequestException(`Courier with id ${id} not found`)
+    }
+
+    return courier
+  }
+
+  async findByIdOrFail(id: number) {
+    const courier = await this.courierRepository.findOne({
+      where: { id },
+    })
+
+    if (!courier) {
+      throw new BadRequestException(`Courier with id ${id} does not exist`)
+    }
+
+    return courier
+  }
+
+  isActive(courier: Courier) {
+    if (!courier.isActive) {
+      throw new BadRequestException('Courier is not active')
+    }
   }
 
   create(input: CourierInputDto, user: User) {

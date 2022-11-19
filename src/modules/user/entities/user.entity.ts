@@ -8,6 +8,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm'
 
+import { ColumnNumericTransformer } from '../../../common/transformers/'
 import { FileEntity } from '../../file/entities'
 
 @Entity({ name: 'users' })
@@ -43,8 +44,18 @@ export class User {
   @Column({ name: 'is_admin', default: false })
   isAdmin: boolean
 
-  // @Column()
-  // rating: number
+  @Column({ name: 'is_active', default: true })
+  isActive: boolean
+
+  @Column({
+    name: 'rating_as_courier',
+    type: 'decimal',
+    precision: 3,
+    scale: 2,
+    default: 0,
+    transformer: new ColumnNumericTransformer(),
+  })
+  ratingAsCourier: number
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date

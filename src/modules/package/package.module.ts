@@ -8,6 +8,6 @@ import { PackageResolver } from './resolvers/package.resolver'
 @Module({
   imports: [TypeOrmModule.forFeature([Package])],
   providers: [PackageResolver, PackageService],
-  exports: [],
+  exports: [PackageService],
 })
 export class PackageModule {}

@@ -1,17 +1,18 @@
 import {
   Column,
+  CreateDateColumn,
   Entity,
   JoinColumn,
-  ManyToOne,
+  OneToOne,
   PrimaryGeneratedColumn,
   Unique,
+  UpdateDateColumn,
 } from 'typeorm'
 
 import { Package } from '../../package/entities/package.entity'
 import { Courier } from '../../courier/entities'
 
 @Entity({ name: 'orders' })
-@Unique(['packageId', 'courierId'])
 export class Order {
   @PrimaryGeneratedColumn()
   id: number
@@ -19,7 +20,7 @@ export class Order {
   @Column({ name: 'package_id' })
   packageId: number
 
-  @ManyToOne(() => Package, (pack) => pack.packageToCouriers, {
+  @OneToOne(() => Package, (pack) => pack.order, {
     onDelete: 'SET NULL',
     nullable: true,
   })
@@ -29,18 +30,15 @@ export class Order {
   @Column({ name: 'courier_id' })
   courierId: number
 
-  @ManyToOne(() => Courier, (courier) => courier.packageToCouriers, {
+  @OneToOne(() => Courier, (courier) => courier.order, {
     onDelete: 'SET NULL',
     nullable: true,
   })
   @JoinColumn({ name: 'courier_id' })
   courier: Courier | null
 
-  @Column({ name: 'ordered_by_courier' })
-  orderedByCourier: boolean
-
-  @Column({ name: 'pick_up_date', nullable: true })
-  pickUpDate: Date | null
+  @Column({ name: 'pick_up_date' })
+  pickUpDate: Date
 
   @Column({ name: 'intransit_date', nullable: true })
   intransitDate: Date | null
@@ -56,4 +54,10 @@ export class Order {
 
   @Column({ nullable: true })
   comment: string | null
+
+  @CreateDateColumn({ name: 'created_at' })
+  createdAt: Date
+
+  @UpdateDateColumn({ name: 'updated_at' })
+  updatedAt: Date
 }

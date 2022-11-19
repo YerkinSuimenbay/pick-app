@@ -5,5 +5,5 @@ export class RegisterInputDto {
   phone: string
   idType: string
   idNumber: string
-  idImageIds: number[]
+  // idImageIds: number[]
 }

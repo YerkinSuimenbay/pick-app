@@ -18,20 +18,6 @@ export class PackageService {
     private readonly fileService: FileService,
   ) {}
 
-  async findByIdOrFail(id: number) {
-    const pack = await this.packageRepository.findOne({
-      where: { id },
-    })
-
-    if (!pack) {
-      throw new BadRequestException(
-        `Package order with id ${id} does not exist`,
-      )
-    }
-
-    return pack
-  }
-
   find({ filter }: { filter?: PackagesFilterDto }) {
     const { from, to, date, maximumWeight } = filter || {}
 
@@ -57,6 +43,59 @@ export class PackageService {
     return qb.getManyAndCount()
   }
 
+  find2() {
+    const qb = this.packageRepository
+      .createQueryBuilder('package')
+      .innerJoinAndSelect('package.user', 'user')
+      .leftJoinAndSelect('user.idImages', 'idImages') // TODO: innerJoin
+      .leftJoinAndSelect('package.images', 'image')
+      .leftJoinAndSelect('package.packageToCouriers', 'pToC')
+      .leftJoinAndMapMany('pToC.courier', 'pToCCourier', '')
+      .leftJoinAndSelect('package.order', 'order')
+      .leftJoinAndSelect('order.courier', 'courier')
+      .leftJoinAndSelect('courier.user', 'cUser')
+      .leftJoinAndSelect('cUser', 'cUser.idImages')
+
+    return qb.getManyAndCount()
+  }
+
+  async findByIdOrFail(id: number) {
+    const pack = await this.packageRepository.findOne({
+      where: { id },
+      relations: ['user'],
+    })
+
+    if (!pack) {
+      throw new BadRequestException(
+        `Package order with id ${id} does not exist`,
+      )
+    }
+
+    return pack
+  }
+
+  async findByIdAndUserOrFail(user: User, id: number) {
+    const pack = await this.packageRepository.findOne({
+      where: {
+        id,
+        user,
+      },
+      relations: ['user'],
+    })
+
+    if (!pack) {
+      throw new BadRequestException(`Package with id ${id} not found`)
+    }
+
+    return pack
+  }
+
+  isActive(pack: Package) {
+    if (pack.status !== PackageStatus.new) {
+      throw new BadRequestException('Invalid package')
+    }
+  }
+
   async create(input: PackageInputDto, user: User) {
     const { imageIds, ...packageInput } = input
     const pack = this.packageRepository.create(packageInput)
@@ -75,10 +114,7 @@ export class PackageService {
       throw new BadRequestException('You cannot cancel this order')
     }
 
-    if (
-      pack.status !== PackageStatus.new &&
-      pack.status !== PackageStatus.pickup
-    ) {
+    if (pack.status !== PackageStatus.new) {
       throw new BadRequestException('Package order cannot be canceled')
     }
 
@@ -87,5 +123,10 @@ export class PackageService {
     await this.packageRepository.save(pack)
 
     return true
+  }
+
+  changeStatus(pack: Package, status: PackageStatus) {
+    pack.status = status
+    return this.packageRepository.save(pack)
   }
 }

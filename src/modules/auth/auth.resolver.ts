@@ -1,6 +1,6 @@
-import { User } from './../user/entities/user.entity'
 import { Args, Mutation, Resolver } from '@nestjs/graphql'
 
+import { User } from './../user/entities/user.entity'
 import { AuthService } from './services/auth.service'
 import { AuthUser, CurrentUser } from './decorators'
 import { ChangePasswordInputDto, RegisterInputDto } from './dto'

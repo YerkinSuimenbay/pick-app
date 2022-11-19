@@ -1,12 +1,69 @@
-type Mutation {
-  bookTheDelivery(sendId: Int!, deliverId: Int!): Boolean! # done by deliver
-  takeMyOrder(deliverId: Int!, sendId: Int!): Boolean! # done by send
-  
-  changeToNextStatus(sendId: Int!): Boolean! # done by send
-  
-  acceptOrderBySend(orderId: Int!): Boolean!
-  declineOrderBySend(orderId: Int!): Boolean!
+enum PackageToCourierStatus {
+  pending
+  canceled
+  accepted
+}
 
-  acceptOrderByDeliver(orderId: Int!): Boolean!
-  declineOrderByDeliver(orderId: Int!): Boolean!
+type PackageToCourier {
+  id: Int!
+  package: Package
+  courier: Courier
+  bookedByCourier: Boolean!
+  status: PackageToCourierStatus!
+  createdAt: Date!
+  updatedAt: Date!
+}
+
+type Order {
+  id: Int!
+  package: Package
+  courier: Courier
+  pickUpDate: Date!
+  intransitDate: Date
+  deliveredDate: Date
+  canceledDate: Date
+  rating: Int
+  comment: String
+  createdAt: Date!
+  updatedAt: Date!
+}
+
+type SeeOffersForPackageResponse {
+  list: [PackageToCourier!]!
+  total: Int!
+}
+
+type SeeOffersForCourierResponse {
+  list: [PackageToCourier!]!
+  total: Int!
+}
+
+# type Query {
+# seeBooksForPackage(packageId: Int!): SeeOffersForPackageResponse!
+# seeTakesForPackage(packageId: Int!): SeeOffersForPackageResponse!
+
+# seeBooksForCourier(courierId: Int!): SeeOffersForCourierResponse!
+# # orders(filter: )
+# myPackageOrders(filter: )
+# myCourierOrders(filter: )
+# }
+
+type Mutation {
+  # BY DELIVER GUY
+  bookThePackage(packageId: Int!, courierId: Int!): PackageToCourier!
+  cancelBookThePackage(packageToCourierId: Int!): Boolean!
+  acceptPackage(packageToCourierId: Int!): Order!
+  declinePackage(packageToCourierId: Int!): Boolean!
+  intransitOrder(orderId: Int!): Boolean!
+  deliverOrder(orderId: Int!): Boolean!
+  revertOrder(orderId: Int!): Boolean!
+
+  # BY SENDER GUY
+  takeMyPackage(packageId: Int!, courierId: Int!): PackageToCourier!
+  cancelTakeMyPackage(packageToCourierId: Int!): Boolean!
+  acceptCourier(packageToCourierId: Int!): Order!
+  declineCourier(packageToCourierId: Int!): Boolean!
+  cancelOrder(orderId: Int!): Boolean!
+  #
+  changeToNextStatus(sendId: Int!): Boolean! # done by send
 }

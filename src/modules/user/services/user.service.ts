@@ -1,4 +1,9 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common'
+import {
+  BadRequestException,
+  forwardRef,
+  Inject,
+  Injectable,
+} from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 
@@ -25,13 +30,19 @@ export class UserService {
     })
   }
 
-  async create(input: RegisterInputDto) {
-    const { idImageIds, ...userInput } = input
+  async create(userInput: RegisterInputDto) {
     const user = this.userRepository.create(userInput)
+    return this.userRepository.save(user)
+  }
 
+  async upsertIdImages(user: User, idImageIds: number[]) {
     const images = await this.fileService.findByIds(idImageIds)
-    user.idImages = images
 
+    if (images.length === 0) {
+      throw new BadRequestException('No image was found')
+    }
+
+    user.idImages = images
     return this.userRepository.save(user)
   }
 

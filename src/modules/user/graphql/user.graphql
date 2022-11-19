@@ -7,7 +7,7 @@ type User {
   idNumber: String!
   idImages: [File!]
   description: String
-  # rating: Int!
+  ratingAsCourier: Float!
   createdAt: Date!
   updatedAt: Date!
 }
@@ -36,5 +36,6 @@ type Query {
 }
 
 type Mutation {
+  upsertIdImages(idImageIds: [Int!]!): User!
   updateAccount(input: UpdateAccountInput!): User!
 }

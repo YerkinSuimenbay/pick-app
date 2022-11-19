@@ -34,8 +34,27 @@ input PackageInput {
   imageIds: [Int!]!
 }
 
-type PackagesResponse {
-  list: [Package!]!
+type NewPackageItem {
+  package: Package
+  incomingOffers: [Courier!]
+  outgoingOffers: [Courier!]
+}
+
+type NewPackagesResponse {
+  list: [NewPackageItem!]!
+  total: Int!
+}
+
+type ActivePackageItem {
+  package: Package
+  pickupDate: Date
+  intransitDate: Date
+  deliveredDate: Date
+  canceledDate: Date
+}
+
+type ActivePackagesResponse {
+  list: [ActivePackageItem!]!
   total: Int!
 }
 
@@ -46,8 +65,18 @@ input PackagesFilter {
   maximumWeight: Int
 }
 
+input MyPackagesFilter {
+  status: PackageStatus!
+}
+
+type PackagesResponse {
+  list: [Package!]!
+  total: Int!
+}
+
 type Query {
-  # mySends:SendsResponse!
+  myNewPackages: NewPackagesResponse!
+  myActivePackages: ActivePackagesResponse!
   packages(filter: PackagesFilter): PackagesResponse!
 }
 

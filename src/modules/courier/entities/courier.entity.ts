@@ -1,3 +1,4 @@
+import { Order } from './../../order/entities/order.entity'
 import {
   Column,
   CreateDateColumn,
@@ -5,6 +6,7 @@ import {
   JoinColumn,
   ManyToOne,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm'
@@ -17,12 +19,12 @@ export class Courier {
   @PrimaryGeneratedColumn()
   id: number
 
-  @Column({ name: 'user_id' })
-  userId: number
+  @Column({ name: 'user_id', nullable: true })
+  userId: number | null
 
-  @ManyToOne(() => User, { onDelete: 'CASCADE' })
+  @ManyToOne(() => User, { onDelete: 'SET NULL', nullable: true })
   @JoinColumn({ name: 'user_id' })
-  user: User
+  user: User | null
 
   // status: if user has incomplete courier cannot create new
 
@@ -56,6 +58,9 @@ export class Courier {
     { nullable: true },
   )
   packageToCouriers: PackageToCourier[] | null
+
+  @OneToOne(() => Order, (order) => order.courier, { nullable: true })
+  order: Order | null
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date

@@ -5,7 +5,7 @@ input RegisterInput {
   phone: String!
   idType: String!
   idNumber: String!
-  idImageIds: [Int!]!
+  # idImageIds: [Int!]!
 }
 
 type AuthResponse {
