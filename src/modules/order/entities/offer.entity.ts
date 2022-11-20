@@ -5,17 +5,16 @@ import {
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
-  Unique,
   UpdateDateColumn,
 } from 'typeorm'
 
 import { Courier } from '../../courier/entities'
 import { Package } from '../../package/entities'
-import { PackageToCourierStatus } from '../enums'
+import { OfferStatus } from '../enums'
 
-@Entity({ name: 'packageToCouriers' })
-@Unique(['packageId', 'courierId'])
-export class PackageToCourier {
+@Entity({ name: 'offers' })
+// @Unique(['packageId', 'courierId'])
+export class Offer {
   @PrimaryGeneratedColumn()
   id: number
 
@@ -23,7 +22,7 @@ export class PackageToCourier {
   @Column({ name: 'package_id', nullable: true }) // ?: nullable: false
   packageId: number | null
 
-  @ManyToOne(() => Package, (pack) => pack.packageToCouriers, {
+  @ManyToOne(() => Package, (pack) => pack.offers, {
     onDelete: 'SET NULL',
     nullable: true,
   })
@@ -34,18 +33,18 @@ export class PackageToCourier {
   @Column({ name: 'courier_id', nullable: true })
   courierId: number | null
 
-  @ManyToOne(() => Courier, (courier) => courier.packageToCouriers, {
+  @ManyToOne(() => Courier, (courier) => courier.offers, {
     onDelete: 'SET NULL',
     nullable: true,
   })
   @JoinColumn({ name: 'courier_id' })
   courier: Courier | null
 
-  @Column({ name: 'booked_by_courier' })
-  bookedByCourier: boolean
+  @Column({ name: 'offered_by_courier' })
+  offeredByCourier: boolean
 
-  @Column('varchar', { default: PackageToCourierStatus.pending })
-  status: PackageToCourierStatus
+  @Column('varchar', { default: OfferStatus.pending })
+  status: OfferStatus
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date

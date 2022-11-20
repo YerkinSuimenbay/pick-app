@@ -1,4 +1,3 @@
-import { Order } from './../../order/entities/order.entity'
 import {
   Column,
   CreateDateColumn,
@@ -11,7 +10,9 @@ import {
   UpdateDateColumn,
 } from 'typeorm'
 
-import { PackageToCourier } from '../../order/entities'
+import { Order } from './../../order/entities/order.entity'
+
+import { Offer } from '../../order/entities'
 import { User } from '../../user/entities'
 
 @Entity({ name: 'couriers' })
@@ -52,15 +53,11 @@ export class Courier {
   @Column({ name: 'maximum_weight', nullable: true })
   maximumWeight: number | null
 
-  @OneToMany(
-    () => PackageToCourier,
-    (packageToCourier) => packageToCourier.courier,
-    { nullable: true },
-  )
-  packageToCouriers: PackageToCourier[] | null
+  @OneToMany(() => Offer, (offer) => offer.courier, { nullable: true })
+  offers: Offer[] | null
 
-  @OneToOne(() => Order, (order) => order.courier, { nullable: true })
-  order: Order | null
+  @OneToMany(() => Order, (order) => order.courier, { nullable: true })
+  orders: Order[] | null
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date

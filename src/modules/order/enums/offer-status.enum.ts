@@ -1,4 +1,4 @@
-export enum PackageToCourierStatus {
+export enum OfferStatus {
   pending = 'pending', // by default
   canceled = 'canceled', // by creator
   accepted = 'accepted', // by responder

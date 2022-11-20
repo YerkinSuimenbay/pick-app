@@ -18,6 +18,7 @@ type Package {
   comment: String
   contents: String!
   weight: Int!
+  order: Order
   images: [File!]
   status: PackageStatus!
 }
@@ -34,27 +35,8 @@ input PackageInput {
   imageIds: [Int!]!
 }
 
-type NewPackageItem {
-  package: Package
-  incomingOffers: [Courier!]
-  outgoingOffers: [Courier!]
-}
-
-type NewPackagesResponse {
-  list: [NewPackageItem!]!
-  total: Int!
-}
-
-type ActivePackageItem {
-  package: Package
-  pickupDate: Date
-  intransitDate: Date
-  deliveredDate: Date
-  canceledDate: Date
-}
-
-type ActivePackagesResponse {
-  list: [ActivePackageItem!]!
+type OffersResponse {
+  list: [Offer!]
   total: Int!
 }
 
@@ -69,6 +51,17 @@ input MyPackagesFilter {
   status: PackageStatus!
 }
 
+type NewPackageItem {
+  package: Package!
+  incomingOffers: OffersResponse!
+  outgoingOffers: OffersResponse!
+}
+
+type NewPackagesResponse {
+  list: [NewPackageItem!]!
+  total: Int!
+}
+
 type PackagesResponse {
   list: [Package!]!
   total: Int!
@@ -76,7 +69,7 @@ type PackagesResponse {
 
 type Query {
   myNewPackages: NewPackagesResponse!
-  myActivePackages: ActivePackagesResponse!
+  myActivePackages: PackagesResponse!
   packages(filter: PackagesFilter): PackagesResponse!
 }
 

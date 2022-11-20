@@ -7,6 +7,8 @@ type User {
   idNumber: String!
   idImages: [File!]
   description: String
+  isAdmin: Boolean!
+  isActive: Boolean!
   ratingAsCourier: Float!
   createdAt: Date!
   updatedAt: Date!

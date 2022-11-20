@@ -1,2 +1,2 @@
-export * from './package-to-courier.entity'
+export * from './offer.entity'
 export * from './order.entity'

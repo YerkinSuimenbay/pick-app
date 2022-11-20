@@ -1,2 +1,2 @@
-export * from './package-to-courier-status.enum'
-export * from './order-booked-by.enum'
+export * from './offer-status.enum'
+export * from './offered-by.enum'

@@ -1,4 +1,3 @@
-import { Order } from './../../order/entities/order.entity'
 import {
   Column,
   CreateDateColumn,
@@ -11,10 +10,12 @@ import {
   UpdateDateColumn,
 } from 'typeorm'
 
+import { Order } from './../../order/entities/order.entity'
+
 import { PackageStatus } from '../enums'
 import { User } from '../../user/entities'
 import { FileEntity } from '../../file/entities'
-import { PackageToCourier } from '../../order/entities'
+import { Offer } from '../../order/entities'
 
 @Entity({ name: 'packages' })
 export class Package {
@@ -53,18 +54,15 @@ export class Package {
   weight: number | null
 
   @OneToMany(() => FileEntity, (file) => file.packageImage, { nullable: true })
-  // @JoinColumn({ name: 'image_ids' })
   images: FileEntity[] | null
 
   @Column('varchar', { default: PackageStatus.new })
   status: PackageStatus
 
-  @OneToMany(
-    () => PackageToCourier,
-    (packageToCourier) => packageToCourier.package,
-    { nullable: true },
-  )
-  packageToCouriers: PackageToCourier[] | null
+  @OneToMany(() => Offer, (offer) => offer.package, {
+    nullable: true,
+  })
+  offers: Offer[] | null
 
   @OneToOne(() => Order, (order) => order.package, { nullable: true })
   order: Order | null

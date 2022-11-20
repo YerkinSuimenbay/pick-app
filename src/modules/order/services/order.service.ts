@@ -5,7 +5,6 @@ import { Not, Repository } from 'typeorm'
 import { Package } from '../../package/entities/package.entity'
 import { Courier } from '../../courier/entities/courier.entity'
 import { Order } from '../entities/order.entity'
-import { PackageToCourier } from '../entities'
 
 @Injectable()
 export class OrderService {
@@ -13,6 +12,18 @@ export class OrderService {
     @InjectRepository(Order)
     private readonly orderRepository: Repository<Order>,
   ) {}
+
+  findByPackageIdAndCourierId(
+    packageId: number,
+    courierId: number,
+  ): Promise<Order | null> {
+    return this.orderRepository.findOne({
+      where: {
+        packageId,
+        courierId,
+      },
+    })
+  }
 
   async findByIdOrFail(id: number) {
     const order = await this.orderRepository.findOne({

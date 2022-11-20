@@ -1,5 +1,6 @@
 type Courier {
   id: Int!
+  isActive: Boolean!
   user: User!
   from: String!
   to: String!
@@ -8,6 +9,8 @@ type Courier {
   flight: String
   maximumWeight: Int
   comment: String
+  orders: [Order!]
+  offers: [Offer!]
 }
 
 input CourierInput {
@@ -32,7 +35,7 @@ type CouriersResponse {
 }
 
 type Query {
-  # courier(id: Int!): Courier
+  myActiveCouriers: CouriersResponse!
   couriers(filter: CouriersFilter): CouriersResponse!
 }
 

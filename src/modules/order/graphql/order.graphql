@@ -1,15 +1,16 @@
-enum PackageToCourierStatus {
+enum OfferStatus {
   pending
   canceled
   accepted
+  declined
 }
 
-type PackageToCourier {
+type Offer {
   id: Int!
   package: Package
   courier: Courier
-  bookedByCourier: Boolean!
-  status: PackageToCourierStatus!
+  offeredByCourier: Boolean!
+  status: OfferStatus!
   createdAt: Date!
   updatedAt: Date!
 }
@@ -29,41 +30,31 @@ type Order {
 }
 
 type SeeOffersForPackageResponse {
-  list: [PackageToCourier!]!
+  list: [Offer!]!
   total: Int!
 }
 
 type SeeOffersForCourierResponse {
-  list: [PackageToCourier!]!
+  list: [Offer!]!
   total: Int!
 }
 
-# type Query {
-# seeBooksForPackage(packageId: Int!): SeeOffersForPackageResponse!
-# seeTakesForPackage(packageId: Int!): SeeOffersForPackageResponse!
-
-# seeBooksForCourier(courierId: Int!): SeeOffersForCourierResponse!
-# # orders(filter: )
-# myPackageOrders(filter: )
-# myCourierOrders(filter: )
-# }
-
 type Mutation {
   # BY DELIVER GUY
-  bookThePackage(packageId: Int!, courierId: Int!): PackageToCourier!
-  cancelBookThePackage(packageToCourierId: Int!): Boolean!
-  acceptPackage(packageToCourierId: Int!): Order!
-  declinePackage(packageToCourierId: Int!): Boolean!
+  bookThePackage(packageId: Int!, courierId: Int!): Offer!
+  cancelBookThePackage(offerId: Int!): Boolean!
+  acceptPackage(offerId: Int!): Order!
+  declinePackage(offerId: Int!): Boolean!
   intransitOrder(orderId: Int!): Boolean!
   deliverOrder(orderId: Int!): Boolean!
-  revertOrder(orderId: Int!): Boolean!
+  revertOrderToPickUp(orderId: Int!): Boolean!
 
   # BY SENDER GUY
-  takeMyPackage(packageId: Int!, courierId: Int!): PackageToCourier!
-  cancelTakeMyPackage(packageToCourierId: Int!): Boolean!
-  acceptCourier(packageToCourierId: Int!): Order!
-  declineCourier(packageToCourierId: Int!): Boolean!
+  takeMyPackage(packageId: Int!, courierId: Int!): Offer!
+  cancelTakeMyPackage(offerId: Int!): Boolean!
+  acceptCourier(offerId: Int!): Order!
+  declineCourier(offerId: Int!): Boolean!
   cancelOrder(orderId: Int!): Boolean!
   #
-  changeToNextStatus(sendId: Int!): Boolean! # done by send
+  # changeToNextStatus(sendId: Int!): Boolean! # done by send
 }

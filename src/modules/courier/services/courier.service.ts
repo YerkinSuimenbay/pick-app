@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common'
-import { Repository } from 'typeorm'
+import { FindOptionsWhere, Repository } from 'typeorm'
 import { InjectRepository } from '@nestjs/typeorm'
 
 import { OrderService } from '../../order/services/order.service'
@@ -42,7 +42,7 @@ export class CourierService {
     const courier = await this.courierRepository.findOne({
       where: {
         id,
-        user,
+        userId: user.id,
       },
       relations: ['user'],
     })
@@ -57,6 +57,7 @@ export class CourierService {
   async findByIdOrFail(id: number) {
     const courier = await this.courierRepository.findOne({
       where: { id },
+      relations: ['user', 'user.idImages'],
     })
 
     if (!courier) {
@@ -64,6 +65,28 @@ export class CourierService {
     }
 
     return courier
+  }
+
+  findByUserId({ userId, isActive }: { userId: number; isActive?: boolean }) {
+    const where: FindOptionsWhere<Courier> | FindOptionsWhere<Courier>[] = {
+      userId,
+    }
+    if (isActive != null) {
+      where.isActive = isActive
+    }
+
+    return this.courierRepository.findAndCount({
+      where,
+      relations: [
+        'user',
+        'user.idImages',
+        'orders',
+        'orders.package',
+        'orders.package.images',
+        'orders.package.user',
+        'orders.package.user.idImages',
+      ],
+    })
   }
 
   isActive(courier: Courier) {

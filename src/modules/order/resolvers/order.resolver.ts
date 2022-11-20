@@ -3,11 +3,11 @@ import { Args, Mutation, Resolver } from '@nestjs/graphql'
 
 import { CourierService } from '../../courier/services/courier.service'
 import { OrderService } from '../services/order.service'
-import { OrderBookedBy, PackageToCourierStatus } from '../enums'
+import { OfferedBy, OfferStatus } from '../enums'
 import { AuthUser, CurrentUser } from '../../auth/decorators'
 import { User } from '../../user/entities'
 import { PackageService } from '../../package/services'
-import { PackageToCourierService } from '../services'
+import { OfferService } from '../services'
 import { PackageStatus } from '../../package/enums'
 
 @Resolver()
@@ -16,7 +16,7 @@ export class OrderResolver {
     private readonly courierService: CourierService,
     private readonly packageService: PackageService,
     private readonly orderService: OrderService,
-    private readonly packageToCourierService: PackageToCourierService,
+    private readonly offerService: OfferService,
   ) {}
 
   @Mutation()
@@ -39,11 +39,14 @@ export class OrderResolver {
       throw new BadRequestException('You cannot book your own package')
     }
 
-    return this.packageToCourierService.bind(
-      pack,
-      courier,
-      OrderBookedBy.COURIER,
-    )
+    const canBeBooked = await this.offerService.isPossible(packageId, courierId)
+    if (!canBeBooked) {
+      throw new BadRequestException(
+        `Package with id ${packageId} cannot be booked by Courier with id ${courierId}`,
+      )
+    }
+
+    return this.offerService.bind(pack, courier, OfferedBy.COURIER)
   }
 
   @Mutation()
@@ -68,35 +71,37 @@ export class OrderResolver {
       )
     }
 
-    return this.packageToCourierService.bind(
-      pack,
-      courier,
-      OrderBookedBy.SENDER,
-    )
+    const canTake = await this.offerService.isPossible(packageId, courierId)
+    if (!canTake) {
+      throw new BadRequestException(
+        `Courier with id ${courierId} cannot take Package with id ${packageId}`,
+      )
+    }
+
+    return this.offerService.bind(pack, courier, OfferedBy.SENDER)
   }
 
   @Mutation()
   @AuthUser()
   async cancelBookThePackage(
     @CurrentUser() user: User,
-    @Args('packageToCourierId') packageToCourierId: number,
+    @Args('offerId') offerId: number,
   ) {
-    const packageToCourier = await this.packageToCourierService.findByIdOrFail(
-      packageToCourierId,
-    )
+    const offer = await this.offerService.findByIdOrFail(offerId)
 
-    if (packageToCourier.courier.user.id !== user.id) {
+    if (offer.courier.user.id !== user.id) {
       throw new BadRequestException('Not allowed')
     }
 
-    if (packageToCourier.status !== PackageToCourierStatus.pending) {
+    if (offer.status !== OfferStatus.pending) {
       throw new BadRequestException('Cannot be canceled')
     }
 
-    await this.packageToCourierService.changeStatus(
-      packageToCourier,
-      PackageToCourierStatus.canceled,
-    )
+    if (!offer.offeredByCourier) {
+      throw new BadRequestException('Offer can only be canceled by Sender')
+    }
+
+    await this.offerService.changeStatus(offer, OfferStatus.canceled)
 
     return true
   }
@@ -105,24 +110,23 @@ export class OrderResolver {
   @AuthUser()
   async cancelTakeMyPackage(
     @CurrentUser() user: User,
-    @Args('packageToCourierId') packageToCourierId: number,
+    @Args('offerId') offerId: number,
   ) {
-    const packageToCourier = await this.packageToCourierService.findByIdOrFail(
-      packageToCourierId,
-    )
+    const offer = await this.offerService.findByIdOrFail(offerId)
 
-    if (packageToCourier.package.user.id !== user.id) {
+    if (offer.package.user.id !== user.id) {
       throw new BadRequestException('Not allowed')
     }
 
-    if (packageToCourier.status !== PackageToCourierStatus.pending) {
+    if (offer.status !== OfferStatus.pending) {
       throw new BadRequestException('Cannot be canceled')
     }
 
-    await this.packageToCourierService.changeStatus(
-      packageToCourier,
-      PackageToCourierStatus.canceled,
-    )
+    if (offer.offeredByCourier) {
+      throw new BadRequestException('Offer can only be canceled by Courier')
+    }
+
+    await this.offerService.changeStatus(offer, OfferStatus.canceled)
 
     return true
   }
@@ -131,28 +135,30 @@ export class OrderResolver {
   @AuthUser()
   async acceptCourier(
     @CurrentUser() user: User,
-    @Args('packageToCourierId') packageToCourierId: number,
+    @Args('offerId') offerId: number,
   ) {
-    const packageToCourier = await this.packageToCourierService.findByIdOrFail(
-      packageToCourierId,
-    )
+    const offer = await this.offerService.findByIdOrFail(offerId)
 
-    if (packageToCourier.package.user.id !== user.id) {
+    if (offer.package.user.id !== user.id) {
       throw new BadRequestException('Not allowed')
     }
 
-    if (packageToCourier.status !== PackageToCourierStatus.pending) {
+    if (offer.status !== OfferStatus.pending) {
       throw new BadRequestException('Cannot be accepted')
     }
 
-    const order = await this.orderService.create(
-      packageToCourier.package,
-      packageToCourier.courier,
+    let order = await this.orderService.findByPackageIdAndCourierId(
+      offer.packageId,
+      offer.courierId,
     )
-    await this.packageService.changeStatus(
-      packageToCourier.package,
-      PackageStatus.pickup,
-    )
+
+    if (order) {
+      throw new BadRequestException('Order already exists')
+    }
+
+    order = await this.orderService.create(offer.package, offer.courier)
+    await this.packageService.changeStatus(offer.package, PackageStatus.pickup)
+    await this.offerService.changeStatus(offer, OfferStatus.accepted)
 
     return order
   }
@@ -161,24 +167,19 @@ export class OrderResolver {
   @AuthUser()
   async declineCourier(
     @CurrentUser() user: User,
-    @Args('packageToCourierId') packageToCourierId: number,
+    @Args('offerId') offerId: number,
   ) {
-    const packageToCourier = await this.packageToCourierService.findByIdOrFail(
-      packageToCourierId,
-    )
+    const offer = await this.offerService.findByIdOrFail(offerId)
 
-    if (packageToCourier.package.user.id !== user.id) {
+    if (offer.package.user.id !== user.id) {
       throw new BadRequestException('Not allowed')
     }
 
-    if (packageToCourier.status !== PackageToCourierStatus.pending) {
+    if (offer.status !== OfferStatus.pending) {
       throw new BadRequestException('Cannot be declined')
     }
 
-    await this.packageToCourierService.changeStatus(
-      packageToCourier,
-      PackageToCourierStatus.declined,
-    )
+    await this.offerService.changeStatus(offer, OfferStatus.declined)
 
     return true
   }
@@ -187,28 +188,21 @@ export class OrderResolver {
   @AuthUser()
   async acceptPackage(
     @CurrentUser() user: User,
-    @Args('packageToCourierId') packageToCourierId: number,
+    @Args('offerId') offerId: number,
   ) {
-    const packageToCourier = await this.packageToCourierService.findByIdOrFail(
-      packageToCourierId,
-    )
+    const offer = await this.offerService.findByIdOrFail(offerId)
 
-    if (packageToCourier.courier.user.id !== user.id) {
+    if (offer.courier.user.id !== user.id) {
       throw new BadRequestException('Not allowed')
     }
 
-    if (packageToCourier.status !== PackageToCourierStatus.pending) {
+    if (offer.status !== OfferStatus.pending) {
       throw new BadRequestException('Cannot be accepted')
     }
 
-    const order = await this.orderService.create(
-      packageToCourier.package,
-      packageToCourier.courier,
-    )
-    await this.packageService.changeStatus(
-      packageToCourier.package,
-      PackageStatus.pickup,
-    )
+    const order = await this.orderService.create(offer.package, offer.courier)
+    await this.packageService.changeStatus(offer.package, PackageStatus.pickup)
+    await this.offerService.changeStatus(offer, OfferStatus.accepted)
 
     return order
   }
@@ -217,24 +211,19 @@ export class OrderResolver {
   @AuthUser()
   async declinePackage(
     @CurrentUser() user: User,
-    @Args('packageToCourierId') packageToCourierId: number,
+    @Args('offerId') offerId: number,
   ) {
-    const packageToCourier = await this.packageToCourierService.findByIdOrFail(
-      packageToCourierId,
-    )
+    const offer = await this.offerService.findByIdOrFail(offerId)
 
-    if (packageToCourier.courier.user.id !== user.id) {
+    if (offer.courier.user.id !== user.id) {
       throw new BadRequestException('Not allowed')
     }
 
-    if (packageToCourier.status !== PackageToCourierStatus.pending) {
+    if (offer.status !== OfferStatus.pending) {
       throw new BadRequestException('Cannot be declined')
     }
 
-    await this.packageToCourierService.changeStatus(
-      packageToCourier,
-      PackageToCourierStatus.declined,
-    )
+    await this.offerService.changeStatus(offer, OfferStatus.declined)
 
     return true
   }
@@ -324,14 +313,17 @@ export class OrderResolver {
     }
 
     await this.orderService.cancel(order)
-    // ?: SHOULD PACKAGE.status = CANCEL
+    await this.packageService.changeStatus(
+      order.package,
+      PackageStatus.canceled,
+    )
 
     return true
   }
 
   @Mutation()
   @AuthUser()
-  async revertOrder(
+  async revertOrderToPickUp(
     @CurrentUser() user: User,
     @Args('orderId') orderId: number,
   ) {

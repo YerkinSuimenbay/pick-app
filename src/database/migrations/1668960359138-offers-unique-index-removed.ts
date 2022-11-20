@@ -1,19 +1,19 @@
 import { MigrationInterface, QueryRunner } from 'typeorm'
 
-export class courierIsActiveDefaultToTrue1668783481453
+export class offersUniqueIndexRemoved1668960359138
   implements MigrationInterface
 {
-  name = 'courierIsActiveDefaultToTrue1668783481453'
+  name = 'offersUniqueIndexRemoved1668960359138'
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
-      `ALTER TABLE "couriers" ALTER COLUMN "is_active" SET DEFAULT true`,
+      `ALTER TABLE "offers" DROP CONSTRAINT "UQ_6daf4f16d629dbcbab906713220"`,
     )
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
-      `ALTER TABLE "couriers" ALTER COLUMN "is_active" DROP DEFAULT`,
+      `ALTER TABLE "offers" ADD CONSTRAINT "UQ_6daf4f16d629dbcbab906713220" UNIQUE ("package_id", "courier_id")`,
     )
   }
 }

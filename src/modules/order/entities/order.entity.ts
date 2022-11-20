@@ -3,6 +3,7 @@ import {
   CreateDateColumn,
   Entity,
   JoinColumn,
+  ManyToOne,
   OneToOne,
   PrimaryGeneratedColumn,
   Unique,
@@ -30,7 +31,7 @@ export class Order {
   @Column({ name: 'courier_id' })
   courierId: number
 
-  @OneToOne(() => Courier, (courier) => courier.order, {
+  @ManyToOne(() => Courier, (courier) => courier.orders, {
     onDelete: 'SET NULL',
     nullable: true,
   })

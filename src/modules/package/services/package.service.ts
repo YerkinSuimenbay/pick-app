@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common'
-import { Repository } from 'typeorm'
+import { FindOptionsWhere, In, Not, Repository } from 'typeorm'
 import { InjectRepository } from '@nestjs/typeorm'
 
 import { FileService } from './../../file/file.service'
@@ -9,6 +9,7 @@ import { PackageStatus } from '../enums/package-status.enum'
 import { PackageInputDto } from '../dto/package-input.dto'
 import { User } from '../../user/entities'
 import { Package } from '../entities'
+import { OfferedBy, OfferStatus } from '../../order/enums'
 
 @Injectable()
 export class PackageService {
@@ -43,26 +44,51 @@ export class PackageService {
     return qb.getManyAndCount()
   }
 
-  find2() {
-    const qb = this.packageRepository
-      .createQueryBuilder('package')
-      .innerJoinAndSelect('package.user', 'user')
-      .leftJoinAndSelect('user.idImages', 'idImages') // TODO: innerJoin
-      .leftJoinAndSelect('package.images', 'image')
-      .leftJoinAndSelect('package.packageToCouriers', 'pToC')
-      .leftJoinAndMapMany('pToC.courier', 'pToCCourier', '')
-      .leftJoinAndSelect('package.order', 'order')
-      .leftJoinAndSelect('order.courier', 'courier')
-      .leftJoinAndSelect('courier.user', 'cUser')
-      .leftJoinAndSelect('cUser', 'cUser.idImages')
+  findByStatus({
+    userId,
+    status,
+  }: {
+    userId?: number
+    status: PackageStatus | 'active'
+  }) {
+    const where: FindOptionsWhere<Package> | FindOptionsWhere<Package>[] = {}
+    if (userId) {
+      where.userId = userId
+    }
 
-    return qb.getManyAndCount()
+    switch (status) {
+      case 'active':
+        where.status = Not(
+          In([
+            PackageStatus.new,
+            PackageStatus.delivered,
+            PackageStatus.canceled,
+            PackageStatus.archived,
+          ]),
+        )
+        break
+      default:
+        where.status = status
+    }
+
+    return this.packageRepository.findAndCount({
+      where,
+      relations: [
+        'images',
+        'user',
+        'user.idImages',
+        'order',
+        'order.courier',
+        'order.courier.user',
+        'order.courier.user.idImages',
+      ],
+    })
   }
 
   async findByIdOrFail(id: number) {
     const pack = await this.packageRepository.findOne({
       where: { id },
-      relations: ['user'],
+      relations: ['user', 'images'],
     })
 
     if (!pack) {
@@ -78,7 +104,7 @@ export class PackageService {
     const pack = await this.packageRepository.findOne({
       where: {
         id,
-        user,
+        userId: user.id,
       },
       relations: ['user'],
     })

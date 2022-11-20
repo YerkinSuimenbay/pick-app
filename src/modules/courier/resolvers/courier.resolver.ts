@@ -20,6 +20,17 @@ export class CourierResolver {
     return { list, total }
   }
 
+  @Query()
+  @AuthUser()
+  async myActiveCouriers(@CurrentUser() user: User) {
+    const [packages, total] = await this.courierService.findByUserId({
+      userId: user.id,
+      isActive: true,
+    })
+
+    return { list: packages, total }
+  }
+
   @Mutation()
   @AuthUser()
   createCourier(
