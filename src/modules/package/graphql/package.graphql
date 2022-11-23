@@ -35,11 +35,6 @@ input PackageInput {
   imageIds: [Int!]!
 }
 
-type OffersResponse {
-  list: [Offer!]
-  total: Int!
-}
-
 input PackagesFilter {
   from: String!
   to: String!

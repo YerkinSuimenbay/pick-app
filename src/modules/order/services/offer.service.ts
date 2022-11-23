@@ -53,6 +53,28 @@ export class OfferService {
     })
   }
 
+  async findByCourierIdAndOfferfedByCourier(
+    courierId: number,
+    offeredByCourier: OfferedBy,
+  ) {
+    return this.offerRepository.findAndCount({
+      // select: {
+      //   courier:
+      // },
+      where: {
+        courierId,
+        offeredByCourier: offeredByCourier === OfferedBy.COURIER,
+        status: OfferStatus.pending,
+      },
+      relations: [
+        'package',
+        'package.images',
+        'package.user',
+        'package.user.idImages',
+      ],
+    })
+  }
+
   bind(pack: Package, courier: Courier, offeredBy: OfferedBy) {
     const offer = this.offerRepository.create({
       package: pack,

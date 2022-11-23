@@ -34,12 +34,24 @@ type CouriersResponse {
   total: Int!
 }
 
+type CourierItem {
+  courier: Courier!
+  incomingOffers: OffersResponse!
+  outgoingOffers: OffersResponse!
+}
+
+type MyCouriersResponse {
+  list: [CourierItem!]!
+  total: Int!
+}
+
 type Query {
-  myActiveCouriers: CouriersResponse!
+  myCouriers: MyCouriersResponse!
   couriers(filter: CouriersFilter): CouriersResponse!
 }
 
 type Mutation {
   createCourier(input: CourierInput!): Courier!
   cancelCourier(id: Int!): Boolean!
+  addCourierToFavorites(courierId: Int!): Boolean!
 }

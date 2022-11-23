@@ -26,6 +26,13 @@ export class UserService {
   findByEmail(email: string) {
     return this.userRepository.findOne({
       where: { email },
+      relations: ['idImages', 'favorites', 'favorites.idImages'],
+    })
+  }
+
+  findByPhone(phone: string) {
+    return this.userRepository.findOne({
+      where: { phone },
       relations: ['idImages'],
     })
   }
@@ -57,6 +64,15 @@ export class UserService {
     user.email = input.email
     user.description = input.description
 
+    return this.userRepository.save(user)
+  }
+
+  favorite(user: User, favorite: User) {
+    if (user.favorites) {
+      user.favorites.push(favorite)
+    } else {
+      user.favorites = [favorite]
+    }
     return this.userRepository.save(user)
   }
 }

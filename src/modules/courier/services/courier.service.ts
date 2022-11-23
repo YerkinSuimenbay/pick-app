@@ -44,7 +44,7 @@ export class CourierService {
         id,
         userId: user.id,
       },
-      relations: ['user'],
+      relations: ['user', 'user.idImages'],
     })
 
     if (!courier) {
@@ -103,20 +103,16 @@ export class CourierService {
   }
 
   async cancel(id: number, user: User) {
-    const courier = await this.findByIdOrFail(id)
-
-    if (courier.userId !== user.id) {
-      throw new BadRequestException('You cannot cancel this order')
-    }
+    const courier = await this.findByIdAndUserOrFail(user, id)
 
     if (!courier.isActive) {
-      throw new BadRequestException('Order already canceled')
+      throw new BadRequestException('Courier already canceled')
     }
 
     // if courier already in process then wait until all sendOrders are served
     const isInProcess = await this.orderService.isCourierInProcess(courier)
     if (isInProcess) {
-      throw new BadRequestException('Order is in process')
+      throw new BadRequestException('Courier is in process')
     }
 
     courier.isActive = false

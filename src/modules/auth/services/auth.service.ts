@@ -28,6 +28,19 @@ export class AuthService {
   ) {}
 
   async register(input: RegisterInputDto) {
+    input.email = input.email.trim()
+    input.phone = input.phone.trim()
+
+    const isEmailInUse = await this.userService.findByEmail(input.email)
+    if (!!isEmailInUse) {
+      throw new BadRequestException(`Email ${input.email} not available`)
+    }
+
+    const isPhoneInUse = await this.userService.findByPhone(input.phone)
+    if (!!isPhoneInUse) {
+      throw new BadRequestException(`Phone ${input.phone} not available`)
+    }
+
     const hashedPassword = await this.hashPassword(input.password)
     input.password = hashedPassword
 

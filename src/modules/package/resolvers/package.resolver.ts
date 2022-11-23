@@ -1,13 +1,12 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
 
-import { OfferService } from '../../order/services/offer.service'
-import { OfferedBy } from '../../order/enums/offered-by.enum'
-import { PackagesFilterDto } from '../dto/packages-filter.dto'
 import { AuthUser, CurrentUser } from '../../auth/decorators'
 import { User } from '../../user/entities'
-import { PackageInputDto } from '../dto'
+import { PackageInputDto, PackagesFilterDto } from '../dto'
 import { PackageService } from '../services'
 import { PackageStatus } from '../enums'
+import { OfferedBy } from '../../order/enums'
+import { OfferService } from '../../order/services'
 
 @Resolver()
 export class PackageResolver {

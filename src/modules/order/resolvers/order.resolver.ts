@@ -147,6 +147,8 @@ export class OrderResolver {
       throw new BadRequestException('Cannot be accepted')
     }
 
+    this.courierService.isActive(offer.courier)
+
     let order = await this.orderService.findByPackageIdAndCourierId(
       offer.packageId,
       offer.courierId,
@@ -199,6 +201,8 @@ export class OrderResolver {
     if (offer.status !== OfferStatus.pending) {
       throw new BadRequestException('Cannot be accepted')
     }
+
+    this.packageService.isActive(offer.package)
 
     const order = await this.orderService.create(offer.package, offer.courier)
     await this.packageService.changeStatus(offer.package, PackageStatus.pickup)

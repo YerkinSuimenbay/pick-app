@@ -41,7 +41,7 @@ export class OrderService {
   async isCourierInProcess(courier: Courier) {
     const count = await this.orderRepository.count({
       where: {
-        courier,
+        courierId: courier.id,
         deliveredDate: Not(null),
         canceledDate: Not(null),
       },

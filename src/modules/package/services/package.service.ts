@@ -9,7 +9,6 @@ import { PackageStatus } from '../enums/package-status.enum'
 import { PackageInputDto } from '../dto/package-input.dto'
 import { User } from '../../user/entities'
 import { Package } from '../entities'
-import { OfferedBy, OfferStatus } from '../../order/enums'
 
 @Injectable()
 export class PackageService {

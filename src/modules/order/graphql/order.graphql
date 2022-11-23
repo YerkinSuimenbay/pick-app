@@ -39,6 +39,11 @@ type SeeOffersForCourierResponse {
   total: Int!
 }
 
+type OffersResponse {
+  list: [Offer!]
+  total: Int!
+}
+
 type Mutation {
   # BY DELIVER GUY
   bookThePackage(packageId: Int!, courierId: Int!): Offer!

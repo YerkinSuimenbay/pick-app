@@ -3,6 +3,8 @@ import {
   CreateDateColumn,
   Entity,
   JoinColumn,
+  JoinTable,
+  ManyToMany,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -56,6 +58,20 @@ export class User {
     transformer: new ColumnNumericTransformer(),
   })
   ratingAsCourier: number
+
+  @ManyToMany(() => User)
+  @JoinTable({
+    name: 'user_favorites',
+    joinColumn: {
+      name: 'user_id',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'favorite_id',
+      referencedColumnName: 'id',
+    },
+  })
+  favorites: User[]
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date

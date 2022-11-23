@@ -10,6 +10,7 @@ type User {
   isAdmin: Boolean!
   isActive: Boolean!
   ratingAsCourier: Float!
+  favorites: [User!]
   createdAt: Date!
   updatedAt: Date!
 }
