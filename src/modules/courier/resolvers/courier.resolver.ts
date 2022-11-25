@@ -66,6 +66,10 @@ export class CourierResolver {
     @CurrentUser() user: User,
     @Args('input') input: CourierInputDto,
   ) {
+    if (input.fromId === input.toId) {
+      throw new BadRequestException('Same city, better to use taxi')
+    }
+
     return this.courierService.create(input, user)
   }
 

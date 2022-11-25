@@ -1,6 +1,6 @@
 export class PackageInputDto {
-  from: string
-  to: string
+  fromId: number
+  toId: number
   sendDate: Date
   deliveryDate: Date
   fee: number

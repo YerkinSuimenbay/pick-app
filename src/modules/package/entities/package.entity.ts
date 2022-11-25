@@ -16,6 +16,7 @@ import { PackageStatus } from '../enums'
 import { User } from '../../user/entities'
 import { FileEntity } from '../../file/entities'
 import { Offer } from '../../order/entities'
+import { City } from '../../locations/entities'
 
 @Entity({ name: 'packages' })
 export class Package {
@@ -29,11 +30,13 @@ export class Package {
   @JoinColumn({ name: 'user_id' })
   user: User | null
 
-  @Column()
-  from: string
+  @OneToOne(() => City)
+  @JoinColumn()
+  from: City
 
-  @Column()
-  to: string
+  @OneToOne(() => City)
+  @JoinColumn()
+  to: City
 
   @Column({ name: 'send_date' })
   sendDate: Date

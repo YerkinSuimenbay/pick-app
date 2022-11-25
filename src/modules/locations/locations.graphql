@@ -1,0 +1,32 @@
+type Country {
+  id: Int!
+  name: String!
+  cities: [City]!
+}
+
+type City {
+  id: Int!
+  name: String!
+  subcountry: String
+  geonameid: Int!
+  country: Country!
+}
+
+type CountriesResponse {
+  countries: [Country]!
+  total: Int!
+}
+
+type CitiesResponse {
+  cities: [City]!
+  total: Int!
+}
+
+input CitiesFilter {
+  search: String
+}
+
+type Query {
+  countries: CountriesResponse!
+  cities(filter: CitiesFilter): CitiesResponse!
+}

@@ -9,6 +9,7 @@ import { PackageStatus } from '../enums/package-status.enum'
 import { PackageInputDto } from '../dto/package-input.dto'
 import { User } from '../../user/entities'
 import { Package } from '../entities'
+import { LocationsService } from '../../locations/locations.service'
 
 @Injectable()
 export class PackageService {
@@ -16,22 +17,27 @@ export class PackageService {
     @InjectRepository(Package)
     private readonly packageRepository: Repository<Package>,
     private readonly fileService: FileService,
+    private readonly locationsService: LocationsService,
   ) {}
 
   find({ filter }: { filter?: PackagesFilterDto }) {
-    const { from, to, date, maximumWeight } = filter || {}
+    const { fromId, toId, date, maximumWeight } = filter || {}
 
     const qb = this.packageRepository
       .createQueryBuilder('package')
+      .innerJoinAndSelect('package.from', 'fromCity')
+      .innerJoinAndSelect('fromCity.country', 'fromCityCountry')
+      .innerJoinAndSelect('package.to', 'toCity')
+      .innerJoinAndSelect('toCity.country', 'toCityCountry')
       .innerJoinAndSelect('package.user', 'user')
       .leftJoinAndSelect('user.idImages', 'idImages') // TODO: innerJoin
       .leftJoinAndSelect('package.images', 'image')
 
-    if (from) {
-      qb.andWhere('package.from = :from', { from }) // ?: lowercase
+    if (fromId) {
+      qb.andWhere('fromCity.id = :fromId', { fromId })
     }
-    if (to) {
-      qb.andWhere('package.to = :to', { to }) // ?: lowercase
+    if (toId) {
+      qb.andWhere('toCity.id = :toId', { toId })
     }
     if (date) {
       qb.andWhere('package.sendDate >= :date', { date }) // ?: fix this
@@ -80,6 +86,10 @@ export class PackageService {
         'order.courier',
         'order.courier.user',
         'order.courier.user.idImages',
+        'from',
+        'from.country',
+        'to',
+        'to.country',
       ],
     })
   }
@@ -122,12 +132,17 @@ export class PackageService {
   }
 
   async create(input: PackageInputDto, user: User) {
-    const { imageIds, ...packageInput } = input
-    const pack = this.packageRepository.create(packageInput)
-    const images = await this.fileService.findByIds(imageIds)
+    const { imageIds, fromId, toId, ...packageInput } = input
 
+    const images = await this.fileService.findByIds(imageIds)
+    const fromCity = await this.locationsService.findCityByIdOrFail(fromId)
+    const toCity = await this.locationsService.findCityByIdOrFail(toId)
+
+    const pack = this.packageRepository.create(packageInput)
     pack.user = user
     pack.images = images
+    pack.from = fromCity
+    pack.to = toCity
 
     return this.packageRepository.save(pack)
   }

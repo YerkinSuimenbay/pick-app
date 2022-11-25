@@ -1,3 +1,4 @@
+import { BadRequestException } from '@nestjs/common'
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
 
 import { AuthUser, CurrentUser } from '../../auth/decorators'
@@ -73,6 +74,10 @@ export class PackageResolver {
     @Args('input') input: PackageInputDto,
     @CurrentUser() user: User,
   ) {
+    if (input.fromId === input.toId) {
+      throw new BadRequestException('Same city, better to use taxi')
+    }
+
     return this.packageService.create(input, user)
   }
 

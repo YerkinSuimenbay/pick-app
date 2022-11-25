@@ -14,6 +14,7 @@ import { Order } from './../../order/entities/order.entity'
 
 import { Offer } from '../../order/entities'
 import { User } from '../../user/entities'
+import { City } from '../../locations/entities'
 
 @Entity({ name: 'couriers' })
 export class Courier {
@@ -32,11 +33,13 @@ export class Courier {
   @Column({ name: 'is_active', default: true })
   isActive: boolean
 
-  @Column()
-  from: string
+  @OneToOne(() => City)
+  @JoinColumn()
+  from: City
 
-  @Column()
-  to: string
+  @OneToOne(() => City)
+  @JoinColumn()
+  to: City
 
   @Column()
   date: Date

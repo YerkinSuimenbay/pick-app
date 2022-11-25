@@ -2,8 +2,8 @@ type Courier {
   id: Int!
   isActive: Boolean!
   user: User!
-  from: String!
-  to: String!
+  from: City!
+  to: City!
   date: Date!
   fee: Int
   flight: String
@@ -14,8 +14,8 @@ type Courier {
 }
 
 input CourierInput {
-  from: String!
-  to: String!
+  fromId: Int!
+  toId: Int!
   date: Date!
   flight: String
   fee: Int
@@ -24,8 +24,8 @@ input CourierInput {
 }
 
 input CouriersFilter {
-  from: String!
-  to: String!
+  fromId: Int!
+  toId: Int!
   date: Date!
 }
 

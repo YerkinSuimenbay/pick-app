@@ -14,6 +14,7 @@ import { StorageModule } from './modules/storage/storage.module'
 import { OrderModule } from './modules/order/order.module'
 import { PackageModule } from './modules/package/package.module'
 import { CourierModule } from './modules/courier/courier.module'
+import { LocationsModule } from './modules/locations/locations.module'
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { CourierModule } from './modules/courier/courier.module'
     PackageModule,
     CourierModule,
     OrderModule,
+    LocationsModule,
   ],
 })
 export class AppModule {}

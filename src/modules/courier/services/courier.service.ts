@@ -3,11 +3,11 @@ import { FindOptionsWhere, Repository } from 'typeorm'
 import { InjectRepository } from '@nestjs/typeorm'
 
 import { OrderService } from '../../order/services/order.service'
-
 import { CourierInputDto } from '../dto/courier-input.dto'
 import { User } from '../../user/entities'
 import { Courier } from '../entities'
 import { CouriersFilterDto } from '../dto'
+import { LocationsService } from '../../locations/locations.service'
 
 @Injectable()
 export class CourierService {
@@ -15,21 +15,26 @@ export class CourierService {
     @InjectRepository(Courier)
     private readonly courierRepository: Repository<Courier>,
     private readonly orderService: OrderService,
+    private readonly locationsService: LocationsService,
   ) {}
 
   find({ filter }: { filter?: CouriersFilterDto }) {
-    const { from, to, date } = filter || {}
+    const { fromId, toId, date } = filter || {}
 
     const qb = this.courierRepository
       .createQueryBuilder('courier')
+      .innerJoinAndSelect('courier.from', 'fromCity')
+      .innerJoinAndSelect('fromCity.country', 'fromCityCountry')
+      .innerJoinAndSelect('courier.to', 'toCity')
+      .innerJoinAndSelect('toCity.country', 'toCityCountry')
       .innerJoinAndSelect('courier.user', 'user')
       .leftJoinAndSelect('user.idImages', 'idImages') // TODO: innerJoin
 
-    if (from) {
-      qb.andWhere('courier.from = :from', { from }) // ?: lowercase
+    if (fromId) {
+      qb.andWhere('fromCity.id = :fromId', { fromId })
     }
-    if (to) {
-      qb.andWhere('courier.to = :to', { to }) // ?: lowercase
+    if (toId) {
+      qb.andWhere('toCity.id = :toId', { toId })
     }
     if (date) {
       qb.andWhere('courier.date = :date', { date }) // ?: fix this
@@ -44,7 +49,14 @@ export class CourierService {
         id,
         userId: user.id,
       },
-      relations: ['user', 'user.idImages'],
+      relations: [
+        'user',
+        'user.idImages',
+        'from',
+        'from.country',
+        'to',
+        'to.country',
+      ],
     })
 
     if (!courier) {
@@ -57,7 +69,14 @@ export class CourierService {
   async findByIdOrFail(id: number) {
     const courier = await this.courierRepository.findOne({
       where: { id },
-      relations: ['user', 'user.idImages'],
+      relations: [
+        'user',
+        'user.idImages',
+        'from',
+        'from.country',
+        'to',
+        'to.country',
+      ],
     })
 
     if (!courier) {
@@ -85,6 +104,10 @@ export class CourierService {
         'orders.package.images',
         'orders.package.user',
         'orders.package.user.idImages',
+        'from',
+        'from.country',
+        'to',
+        'to.country',
       ],
     })
   }
@@ -95,9 +118,16 @@ export class CourierService {
     }
   }
 
-  create(input: CourierInputDto, user: User) {
-    const courier = this.courierRepository.create(input)
+  async create(input: CourierInputDto, user: User) {
+    const { fromId, toId, ...courierInput } = input
+
+    const fromCity = await this.locationsService.findCityByIdOrFail(fromId)
+    const toCity = await this.locationsService.findCityByIdOrFail(toId)
+
+    const courier = this.courierRepository.create(courierInput)
     courier.user = user
+    courier.from = fromCity
+    courier.to = toCity
 
     return this.courierRepository.save(courier)
   }

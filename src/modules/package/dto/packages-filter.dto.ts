@@ -1,6 +1,6 @@
 export class PackagesFilterDto {
-  from: string
-  to: string
+  fromId: number
+  toId: number
   date: Date
   maximumWeight?: number
 }

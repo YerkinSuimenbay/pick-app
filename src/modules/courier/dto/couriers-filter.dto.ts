@@ -1,5 +1,5 @@
 export class CouriersFilterDto {
-  from: string
-  to: string
+  fromId: number
+  toId: number
   date: Date
 }

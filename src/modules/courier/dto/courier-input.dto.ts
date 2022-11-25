@@ -1,6 +1,6 @@
 export class CourierInputDto {
-  from: string
-  to: string
+  fromId: number
+  toId: number
   date: Date
   flight?: string
   fee?: number
