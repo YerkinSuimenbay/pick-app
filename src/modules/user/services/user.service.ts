@@ -108,4 +108,14 @@ export class UserService {
     }
     return this.userRepository.save(user)
   }
+
+  unfavorite(user: User, favoriteToRemove: User) {
+    if (user.favorites == null) user
+
+    user.favorites = user.favorites.filter(
+      (favorite) => favorite.id !== favoriteToRemove.id,
+    )
+
+    return this.userRepository.save(user)
+  }
 }

@@ -85,7 +85,24 @@ export class CourierResolver {
     if (user.id === courier.userId) {
       throw new BadRequestException('You cannot add yourself to favorites list')
     }
+
     await this.userService.favorite(user, courier.user)
+
+    return true
+  }
+
+  @Mutation()
+  @AuthUser()
+  async removeCourierFromFavorites(
+    @Args('courierId') courierId: number,
+    @CurrentUser() user: User,
+  ) {
+    const courier = await this.courierService.findByIdOrFail(courierId)
+    if (user.id === courier.userId) {
+      throw new BadRequestException('You cannot favorite yourself')
+    }
+
+    await this.userService.unfavorite(user, courier.user)
 
     return true
   }

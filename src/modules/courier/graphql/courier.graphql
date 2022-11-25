@@ -55,5 +55,5 @@ type Mutation {
   cancelCourier(id: Int!): Boolean!
   addCourierToFavorites(courierId: Int!): Boolean!
   # TODO: implement remove courier from favorites
-  # removeCourierFromFavorites(courierId: Int!): Boolean!
+  removeCourierFromFavorites(courierId: Int!): Boolean!
 }
