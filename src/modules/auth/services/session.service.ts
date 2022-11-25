@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { DataSource, Repository } from 'typeorm'
+import * as uuid from 'uuid'
 
 import { SessionEntity } from '../entities/session.entity'
 import { User } from '../../user/entities'
@@ -36,9 +37,8 @@ export class SessionService {
     return this.sessionRepository.save(session)
   }
 
-  // TODO: generate random token
   generateToken() {
-    return 'sessionToken'
+    return uuid.v4()
   }
 
   async hasSession(user: User, sessionToken: string) {

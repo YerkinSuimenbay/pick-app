@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common'
+import { BadRequestException, Injectable } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { InjectRepository } from '@nestjs/typeorm'
 import { In, Repository } from 'typeorm'
@@ -25,5 +25,16 @@ export class FileService {
 
   findByIds(ids: number[]) {
     return this.fileRepository.findBy({ id: In(ids) })
+  }
+
+  async findByIdOrFail(id: number) {
+    const image = await this.fileRepository.findOne({
+      where: { id },
+    })
+    if (!image) {
+      throw new BadRequestException('Image not found')
+    }
+
+    return image
   }
 }

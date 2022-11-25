@@ -28,7 +28,7 @@ export class AuthService {
   ) {}
 
   async register(input: RegisterInputDto) {
-    input.email = input.email.trim()
+    input.email = input.email.toLowerCase().trim()
     input.phone = input.phone.trim()
 
     const isEmailInUse = await this.userService.findByEmail(input.email)
@@ -91,6 +91,21 @@ export class AuthService {
     await this.userService.changePassword(user, hashedNewPassword)
 
     return true
+  }
+
+  refreshUserTokens(user: User, sessionToken: string) {
+    const payload: IJwtPayload = {
+      id: user.id,
+      email: user.email,
+      sessionToken,
+    }
+    const { token, refreshToken } = this.generateToken(payload)
+
+    return {
+      user,
+      token,
+      refreshToken,
+    }
   }
 
   hashPassword(password: string) {

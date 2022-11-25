@@ -3,34 +3,19 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common'
-import { Reflector } from '@nestjs/core'
 import { AuthGuard } from '@nestjs/passport'
 import { GqlExecutionContext } from '@nestjs/graphql'
 
-import { IS_PUBLIC_KEY } from '../decorators'
-
 @Injectable()
-export class JwtAuthGuard extends AuthGuard('jwt') {
-  constructor(private reflector: Reflector) {
-    super()
-  }
-
+export class JwtRefreshAuthGuard extends AuthGuard('jwtRefresh') {
   getRequest(context: ExecutionContext) {
     const ctx = GqlExecutionContext.create(context)
-    const request = ctx.getContext().req
-
-    return request
+    return ctx.getContext().req
   }
 
   handleRequest(err: any, data: any, info: any, context: any) {
     if (err || !data) {
-      const isPublic = this.reflector.getAllAndOverride<boolean>(
-        IS_PUBLIC_KEY,
-        [context.getHandler(), context.getClass()],
-      )
-      if (isPublic) {
-        return undefined
-      }
+      console.log(err, data)
       throw err || new UnauthorizedException()
     }
 

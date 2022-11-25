@@ -14,6 +14,7 @@ export class UserResolver {
   @Query()
   @AuthUser()
   me(@CurrentUser() user: User) {
+    console.log(user)
     return user
   }
 
@@ -28,6 +29,15 @@ export class UserResolver {
     }
 
     return this.userService.upsertIdImages(user, idImageIds)
+  }
+
+  @Mutation()
+  @AuthUser()
+  upsertProfileImage(
+    @CurrentUser() user: User,
+    @Args('imageId') imageId: number,
+  ) {
+    return this.userService.upsertProfileImage(user, imageId)
   }
 
   @Mutation()

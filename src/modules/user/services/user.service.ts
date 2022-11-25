@@ -13,6 +13,7 @@ import { RegisterInputDto } from '../../auth/dto/register-input.dto'
 import { AuthService } from '../../auth/services'
 import { User } from '../entities'
 import { FileService } from '../../file/file.service'
+import { StorageService } from '../../storage/storage.service'
 
 @Injectable()
 export class UserService {
@@ -21,12 +22,18 @@ export class UserService {
     @Inject(forwardRef(() => AuthService))
     private readonly authService: AuthService,
     private readonly fileService: FileService,
+    private readonly storageService: StorageService,
   ) {}
 
   findByEmail(email: string) {
     return this.userRepository.findOne({
       where: { email },
-      relations: ['idImages', 'favorites', 'favorites.idImages'],
+      relations: [
+        'idImages',
+        'favorites',
+        'favorites.idImages',
+        'profileImage',
+      ],
     })
   }
 
@@ -43,13 +50,39 @@ export class UserService {
   }
 
   async upsertIdImages(user: User, idImageIds: number[]) {
-    const images = await this.fileService.findByIds(idImageIds)
+    let images = await this.fileService.findByIds(idImageIds)
+    images = images.filter((image) => {
+      return !(image.userIdImageId || image.packageImageId)
+    })
 
     if (images.length === 0) {
       throw new BadRequestException('No image was found')
     }
 
     user.idImages = images
+    return this.userRepository.save(user)
+  }
+
+  async upsertProfileImage(user: User, imageId: number) {
+    const image = await this.fileService.findByIdOrFail(imageId)
+    if (image.userIdImageId || image.packageImageId) {
+      throw new BadRequestException('Image not available')
+    }
+
+    if (user.profileImage) {
+      if (user.profileImage.id === imageId) {
+        return user
+      }
+
+      // DELETE THE ACTUAL IMAGE
+      this.storageService.deleteFile(
+        `${user.profileImage.path}.${user.profileImage.extension}`,
+      )
+
+      await this.fileService.delete(user.profileImage.id)
+    }
+
+    user.profileImage = image
     return this.userRepository.save(user)
   }
 

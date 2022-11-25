@@ -6,6 +6,7 @@ type User {
   idType: String!
   idNumber: String!
   idImages: [File!]
+  profileImage: File
   description: String
   isAdmin: Boolean!
   isActive: Boolean!
@@ -40,5 +41,6 @@ type Query {
 
 type Mutation {
   upsertIdImages(idImageIds: [Int!]!): User!
+  upsertProfileImage(imageId: Int!): User!
   updateAccount(input: UpdateAccountInput!): User!
 }

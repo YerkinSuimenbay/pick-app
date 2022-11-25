@@ -8,10 +8,9 @@ export const CurrentUser = createParamDecorator(
   },
 )
 
-// export const JwtPayload = createParamDecorator(
-//   (data: unknown, context: ExecutionContext) => {
-//     const ctx = GqlExecutionContext.create(context)
-
-//     return ctx.getContext().req.payload
-//   },
-// )
+export const JwtPayload = createParamDecorator(
+  (data: unknown, context: ExecutionContext) => {
+    const ctx = GqlExecutionContext.create(context)
+    return ctx.getContext().req.payload
+  },
+)

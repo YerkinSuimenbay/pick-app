@@ -24,4 +24,5 @@ type Mutation {
   register(input: RegisterInput!): AuthResponse!
   login(email: String!, password: String!): AuthResponse!
   changePassword(input: ChangePasswordInput!): Boolean!
+  refreshTokens: AuthResponse!
 }

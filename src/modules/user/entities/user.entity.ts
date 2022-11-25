@@ -6,6 +6,7 @@ import {
   JoinTable,
   ManyToMany,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm'
@@ -42,6 +43,10 @@ export class User {
   @OneToMany(() => FileEntity, (file) => file.userIdImage, { nullable: true })
   @JoinColumn({ name: 'id_images_ids' })
   idImages: FileEntity[] | null
+
+  @OneToOne(() => FileEntity, { nullable: true, onDelete: 'SET NULL' })
+  @JoinColumn({ name: 'profile_image_id' })
+  profileImage: FileEntity | null
 
   @Column({ name: 'is_admin', default: false })
   isAdmin: boolean
