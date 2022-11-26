@@ -6,7 +6,6 @@ import {
   ManyToOne,
   OneToOne,
   PrimaryGeneratedColumn,
-  Unique,
   UpdateDateColumn,
 } from 'typeorm'
 

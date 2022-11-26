@@ -19,7 +19,7 @@ export class CourierService {
   ) {}
 
   find({ filter }: { filter?: CouriersFilterDto }) {
-    const { fromId, toId, date } = filter || {}
+    const { fromId, toId, startDate, endDate } = filter || {}
 
     const qb = this.courierRepository
       .createQueryBuilder('courier')
@@ -36,8 +36,11 @@ export class CourierService {
     if (toId) {
       qb.andWhere('toCity.id = :toId', { toId })
     }
-    if (date) {
-      qb.andWhere('courier.date = :date', { date }) // ?: fix this
+    if (endDate) {
+      qb.andWhere('courier.startDate <= :endDate', { endDate })
+    }
+    if (startDate) {
+      qb.andWhere('courier.endDate >= :startDate', { startDate })
     }
 
     return qb.getManyAndCount()

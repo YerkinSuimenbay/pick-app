@@ -12,8 +12,8 @@ type Package {
   user: User!
   from: City!
   to: City!
-  sendDate: Date!
-  deliveryDate: Date!
+  startDate: Date!
+  endDate: Date!
   fee: Int!
   comment: String
   contents: String!
@@ -26,8 +26,8 @@ type Package {
 input PackageInput {
   fromId: Int!
   toId: Int!
-  sendDate: Date!
-  deliveryDate: Date!
+  startDate: Date!
+  endDate: Date!
   fee: Int!
   comment: String
   contents: String!
@@ -38,7 +38,8 @@ input PackageInput {
 input PackagesFilter {
   fromId: Int!
   toId: Int!
-  date: String!
+  startDate: Date!
+  endDate: Date!
   maximumWeight: Int
 }
 

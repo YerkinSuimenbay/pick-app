@@ -78,6 +78,12 @@ export class PackageResolver {
       throw new BadRequestException('Same city, better to use taxi')
     }
 
+    if (input.startDate > input.endDate) {
+      throw new BadRequestException(
+        'Start date should be less than or equal to end date',
+      )
+    }
+
     return this.packageService.create(input, user)
   }
 

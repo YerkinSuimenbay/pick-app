@@ -41,8 +41,11 @@ export class Courier {
   @JoinColumn()
   to: City
 
-  @Column()
-  date: Date
+  @Column({ name: 'start_date' })
+  startDate: Date
+
+  @Column({ name: 'end_date' })
+  endDate: Date
 
   @Column({ nullable: true })
   flight: string | null

@@ -1,8 +1,8 @@
 export class PackageInputDto {
   fromId: number
   toId: number
-  sendDate: Date
-  deliveryDate: Date
+  startDate: Date
+  endDate: Date
   fee: number
   comment?: string
   contents: string

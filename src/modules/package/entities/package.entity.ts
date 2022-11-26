@@ -38,11 +38,11 @@ export class Package {
   @JoinColumn()
   to: City
 
-  @Column({ name: 'send_date' })
-  sendDate: Date
+  @Column({ name: 'start_date' })
+  startDate: Date
 
-  @Column({ name: 'delivery_date' })
-  deliveryDate: Date
+  @Column({ name: 'end_date' })
+  endDate: Date
 
   @Column({ nullable: true })
   fee: number | null

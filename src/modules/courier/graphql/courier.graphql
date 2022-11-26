@@ -4,7 +4,8 @@ type Courier {
   user: User!
   from: City!
   to: City!
-  date: Date!
+  startDate: Date!
+  endDate: Date!
   fee: Int
   flight: String
   maximumWeight: Int
@@ -16,7 +17,8 @@ type Courier {
 input CourierInput {
   fromId: Int!
   toId: Int!
-  date: Date!
+  startDate: Date!
+  endDate: Date!
   flight: String
   fee: Int
   comment: String
@@ -26,7 +28,8 @@ input CourierInput {
 input CouriersFilter {
   fromId: Int!
   toId: Int!
-  date: Date!
+  startDate: Date!
+  endDate: Date!
 }
 
 type CouriersResponse {
@@ -54,6 +57,5 @@ type Mutation {
   createCourier(input: CourierInput!): Courier!
   cancelCourier(id: Int!): Boolean!
   addCourierToFavorites(courierId: Int!): Boolean!
-  # TODO: implement remove courier from favorites
   removeCourierFromFavorites(courierId: Int!): Boolean!
 }

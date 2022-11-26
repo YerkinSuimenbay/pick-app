@@ -21,7 +21,7 @@ export class PackageService {
   ) {}
 
   find({ filter }: { filter?: PackagesFilterDto }) {
-    const { fromId, toId, date, maximumWeight } = filter || {}
+    const { fromId, toId, startDate, endDate, maximumWeight } = filter || {}
 
     const qb = this.packageRepository
       .createQueryBuilder('package')
@@ -39,8 +39,11 @@ export class PackageService {
     if (toId) {
       qb.andWhere('toCity.id = :toId', { toId })
     }
-    if (date) {
-      qb.andWhere('package.sendDate >= :date', { date }) // ?: fix this
+    if (endDate) {
+      qb.andWhere('package.startDate <= :endDate', { endDate })
+    }
+    if (startDate) {
+      qb.andWhere('package.endDate >= :startDate', { startDate })
     }
     if (maximumWeight) {
       qb.andWhere('package.weight <= :maximumWeight', { maximumWeight })

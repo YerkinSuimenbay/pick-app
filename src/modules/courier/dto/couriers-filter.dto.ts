@@ -1,5 +1,6 @@
 export class CouriersFilterDto {
   fromId: number
   toId: number
-  date: Date
+  startDate: Date
+  endDate: Date
 }

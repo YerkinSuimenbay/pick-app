@@ -1,7 +1,8 @@
 export class CourierInputDto {
   fromId: number
   toId: number
-  date: Date
+  startDate: Date
+  endDate: Date
   flight?: string
   fee?: number
   comment?: string
