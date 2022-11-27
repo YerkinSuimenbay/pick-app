@@ -10,6 +10,7 @@ import { PackageInputDto } from '../dto/package-input.dto'
 import { User } from '../../user/entities'
 import { Package } from '../entities'
 import { LocationsService } from '../../locations/locations.service'
+import { OfferService } from '../../order/services'
 
 @Injectable()
 export class PackageService {
@@ -18,6 +19,7 @@ export class PackageService {
     private readonly packageRepository: Repository<Package>,
     private readonly fileService: FileService,
     private readonly locationsService: LocationsService,
+    private readonly offerService: OfferService,
   ) {}
 
   find({ filter }: { filter?: PackagesFilterDto }) {
@@ -162,8 +164,8 @@ export class PackageService {
     }
 
     pack.status = PackageStatus.canceled
-
     await this.packageRepository.save(pack)
+    await this.offerService.cancelOffersByPackageId(pack.id)
 
     return true
   }

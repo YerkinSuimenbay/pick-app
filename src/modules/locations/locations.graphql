@@ -28,5 +28,5 @@ input CitiesFilter {
 
 type Query {
   countries: CountriesResponse!
-  cities(filter: CitiesFilter): CitiesResponse!
+  cities(filter: CitiesFilter, pagination: PaginationInput): CitiesResponse!
 }

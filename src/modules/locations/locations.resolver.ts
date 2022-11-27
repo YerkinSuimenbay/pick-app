@@ -4,6 +4,9 @@ import { LocationsService } from './locations.service'
 import { ICountriesResponse, ICitiesResponse } from './interfaces'
 import { CitiesFilterDto } from './dto'
 
+import { Pagination } from '../../common/decorators'
+import { PaginationDto } from '../../common/dto'
+
 @Resolver()
 export class LocationsResolver {
   constructor(private readonly locationService: LocationsService) {}
@@ -21,8 +24,12 @@ export class LocationsResolver {
   @Query()
   async cities(
     @Args('filter') filter: CitiesFilterDto,
+    @Pagination() pagination: PaginationDto,
   ): Promise<ICitiesResponse> {
-    const [cities, total] = await this.locationService.getCities({ filter })
+    const [cities, total] = await this.locationService.getCities({
+      filter,
+      pagination,
+    })
 
     return {
       total,

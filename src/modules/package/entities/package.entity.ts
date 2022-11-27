@@ -30,12 +30,18 @@ export class Package {
   @JoinColumn({ name: 'user_id' })
   user: User | null
 
-  @OneToOne(() => City)
-  @JoinColumn()
+  @Column({ name: 'from_id' })
+  fromId: number
+
+  @ManyToOne(() => City)
+  @JoinColumn({ name: 'from_id' })
   from: City
 
-  @OneToOne(() => City)
-  @JoinColumn()
+  @Column({ name: 'to_id' })
+  toId: number
+
+  @ManyToOne(() => City)
+  @JoinColumn({ name: 'to_id' })
   to: City
 
   @Column({ name: 'start_date' })

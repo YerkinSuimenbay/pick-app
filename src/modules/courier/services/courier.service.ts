@@ -8,6 +8,7 @@ import { User } from '../../user/entities'
 import { Courier } from '../entities'
 import { CouriersFilterDto } from '../dto'
 import { LocationsService } from '../../locations/locations.service'
+import { OfferService } from '../../order/services'
 
 @Injectable()
 export class CourierService {
@@ -15,6 +16,7 @@ export class CourierService {
     @InjectRepository(Courier)
     private readonly courierRepository: Repository<Courier>,
     private readonly orderService: OrderService,
+    private readonly offerService: OfferService,
     private readonly locationsService: LocationsService,
   ) {}
 
@@ -149,8 +151,8 @@ export class CourierService {
     }
 
     courier.isActive = false
-
     await this.courierRepository.save(courier)
+    await this.offerService.cancelOffersByCourierId(courier.id)
 
     return true
   }

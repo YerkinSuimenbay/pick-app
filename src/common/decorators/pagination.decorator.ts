@@ -13,14 +13,14 @@ export const Pagination = createParamDecorator(
       pagination.limit = data
       pagination.offset = pagination.offset ?? 0
     } else if (pagination) {
-      const maxLimit = 50
-      const { limit = 20, offset = 0 } = pagination
+      const maxLimit = 10
+      const { limit = 5, offset = 0 } = pagination
 
       pagination.limit = Math.min(limit, maxLimit)
       pagination.offset = offset
     } else {
       pagination = {
-        limit: 100,
+        limit: 10,
         offset: 0,
       }
     }

@@ -102,4 +102,22 @@ export class OfferService {
     offer.status = status
     return this.offerRepository.save(offer)
   }
+
+  async cancelOffersByPackageId(packageId: number) {
+    const offers = await this.offerRepository.find({
+      where: { packageId },
+    })
+
+    offers.map((offer) => (offer.status = OfferStatus.canceled))
+    await this.offerRepository.save(offers)
+  }
+
+  async cancelOffersByCourierId(courierId: number) {
+    const offers = await this.offerRepository.find({
+      where: { courierId },
+    })
+
+    offers.map((offer) => (offer.status = OfferStatus.canceled))
+    await this.offerRepository.save(offers)
+  }
 }
