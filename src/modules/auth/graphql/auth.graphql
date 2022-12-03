@@ -23,6 +23,8 @@ input ChangePasswordInput {
 type Mutation {
   register(input: RegisterInput!): AuthResponse!
   login(email: String!, password: String!): AuthResponse!
+  loginWithGoogle(token: String!): AuthResponse!
+  loginWithFacebook(token: String!): AuthResponse!
   changePassword(input: ChangePasswordInput!): Boolean!
   refreshTokens: AuthResponse!
 }
