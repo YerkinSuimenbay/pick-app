@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { PassportStrategy } from '@nestjs/passport'
+import { ForbiddenError } from 'apollo-server-express'
 import { ExtractJwt, Strategy } from 'passport-jwt'
 
 import { User } from '../../user/entities/user.entity'
@@ -32,6 +33,15 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
 
   private async authorizeUser(payload: IJwtPayload): Promise<User> {
     const user = await this.userService.findByEmail(payload.email)
+
+    if (!user.idType || !user.idNumber || !user.idImages) {
+      throw new ForbiddenError('Please fill in your ID data')
+    }
+
+    if (!user.phone) {
+      throw new ForbiddenError('Please fill in your phone')
+    }
+
     const hasSession = await this.sessionService.hasSession(
       user,
       payload.sessionToken,

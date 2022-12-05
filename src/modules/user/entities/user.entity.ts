@@ -12,6 +12,7 @@ import {
 } from 'typeorm'
 
 import { ColumnNumericTransformer } from '../../../common/transformers/'
+import { SocialProvider } from '../../auth/socials/enums'
 import { FileEntity } from '../../file/entities'
 
 @Entity({ name: 'users' })
@@ -22,8 +23,8 @@ export class User {
   @Column()
   name: string
 
-  @Column({ unique: true })
-  phone: string
+  @Column({ unique: true, nullable: true })
+  phone: string | null
 
   @Column({ unique: true })
   email: string
@@ -31,14 +32,20 @@ export class User {
   @Column({ nullable: true })
   description: string | null
 
-  @Column()
-  password: string
+  @Column({ nullable: true })
+  password: string | null
 
-  @Column({ name: 'id_type' })
-  idType: string
+  @Column({ name: 'social_id', nullable: true })
+  socialId: string | null
 
-  @Column({ name: 'id_number' })
-  idNumber: string
+  @Column('varchar', { nullable: true })
+  socialProvider: SocialProvider | null
+
+  @Column({ name: 'id_type', nullable: true })
+  idType: string | null
+
+  @Column({ name: 'id_number', nullable: true })
+  idNumber: string | null
 
   @OneToMany(() => FileEntity, (file) => file.userIdImage, { nullable: true })
   @JoinColumn({ name: 'id_images_ids' })

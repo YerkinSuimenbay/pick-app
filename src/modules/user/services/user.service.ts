@@ -1,3 +1,5 @@
+import { SocialInterface } from './../../../../dist/modules/auth/socials/interfaces/social.interface copy.d'
+import { SocialProvider } from './../../auth/socials/enums/social-provider.enum'
 import {
   BadRequestException,
   forwardRef,
@@ -44,8 +46,31 @@ export class UserService {
     })
   }
 
+  findBySocialIdAndProvider(socialId: string, socialProvider: SocialProvider) {
+    return this.userRepository.findOne({
+      where: { socialId, socialProvider },
+    })
+  }
+
   async create(userInput: RegisterInputDto) {
     const user = this.userRepository.create(userInput)
+    return this.userRepository.save(user)
+  }
+
+  async createSocial(
+    socialProvider: SocialProvider,
+    socialData: SocialInterface,
+  ) {
+    let name = socialData.firstName
+    if (socialData.lastName) name += ` ${socialData.lastName}`
+
+    const user = this.userRepository.create({
+      socialId: socialData.id,
+      socialProvider,
+      email: socialData.email,
+      name,
+    })
+
     return this.userRepository.save(user)
   }
 
