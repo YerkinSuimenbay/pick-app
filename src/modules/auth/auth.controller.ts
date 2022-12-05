@@ -16,7 +16,7 @@ interface OAuthRequest extends Request {
   user: any
 }
 
-@Controller('auth')
+@Controller('authh')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
@@ -25,32 +25,32 @@ export class AuthController {
     return { status: 'success', data: 'Auth tested' }
   }
 
-  @Get('/google')
-  @GoogleAuthUser()
-  async googleAuth(@Req() req: Request) {
-    // Guard redirects
-    return HttpStatus.OK
-  }
+  // @Get('/google')
+  // @GoogleAuthUser()
+  // async googleAuth(@Req() req: Request) {
+  //   // Guard redirects
+  //   return HttpStatus.OK
+  // }
 
-  @Get('/google/redirect')
-  @GoogleAuthUser()
-  googleAuthRedirect(@Req() req: OAuthRequest) {
-    // return this.authService.signInWithGoogle(req)
-    return req.user
-  }
+  // @Get('/google/redirect')
+  // @GoogleAuthUser()
+  // googleAuthRedirect(@Req() req: OAuthRequest) {
+  //   // return this.authService.signInWithGoogle(req)
+  //   return req.user
+  // }
 
-  @Get('/facebook')
-  @FacebookAuthUser()
-  async facebookAuth(): Promise<any> {
-    return HttpStatus.OK
-  }
+  // @Get('/facebook')
+  // @FacebookAuthUser()
+  // async facebookAuth(): Promise<any> {
+  //   return HttpStatus.OK
+  // }
 
-  @Get('/facebook/redirect')
-  @FacebookAuthUser()
-  async facebookAuthRedirect(@Req() req: OAuthRequest): Promise<any> {
-    //   return this.authService.signInWithGoogle(req)
-    return req.user
-  }
+  // @Get('/facebook/redirect')
+  // @FacebookAuthUser()
+  // async facebookAuthRedirect(@Req() req: OAuthRequest): Promise<any> {
+  //   //   return this.authService.signInWithGoogle(req)
+  //   return req.user
+  // }
 
   // @Get('/apple')
   // @FacebookAuthUser()

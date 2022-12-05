@@ -17,6 +17,7 @@ import {
   JwtStrategy,
 } from './strategies'
 import { RolesGuard } from './guards/role.guard'
+import { AuthGoogleModule } from './socials/auth-google/auth-google.module'
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { RolesGuard } from './guards/role.guard'
       },
       inject: [ConfigService],
     }),
+    forwardRef(() => AuthGoogleModule),
   ],
   providers: [
     AuthResolver,
