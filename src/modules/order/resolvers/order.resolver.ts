@@ -149,20 +149,7 @@ export class OrderResolver {
 
     this.courierService.isActive(offer.courier)
 
-    let order = await this.orderService.findByPackageIdAndCourierId(
-      offer.packageId,
-      offer.courierId,
-    )
-
-    if (order) {
-      throw new BadRequestException('Order already exists')
-    }
-
-    order = await this.orderService.create(offer.package, offer.courier)
-    await this.packageService.changeStatus(offer.package, PackageStatus.pickup)
-    await this.offerService.changeStatus(offer, OfferStatus.accepted)
-
-    return order
+    return this.orderService.createFromOffer(offer)
   }
 
   @Mutation()
@@ -204,11 +191,7 @@ export class OrderResolver {
 
     this.packageService.isActive(offer.package)
 
-    const order = await this.orderService.create(offer.package, offer.courier)
-    await this.packageService.changeStatus(offer.package, PackageStatus.pickup)
-    await this.offerService.changeStatus(offer, OfferStatus.accepted)
-
-    return order
+    return this.orderService.createFromOffer(offer)
   }
 
   @Mutation()

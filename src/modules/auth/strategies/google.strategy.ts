@@ -10,7 +10,6 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     // private readonly usersService: UsersService,
   ) {
     super({
-      // Put config in `.env`
       clientID: configService.get<string>('GOOGLE_CLIENT_ID'),
       clientSecret: configService.get<string>('GOOGLE_SECRET'),
       callbackURL: configService.get<string>('GOOGLE_REDIRECT_URL'),

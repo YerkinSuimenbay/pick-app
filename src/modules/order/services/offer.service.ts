@@ -41,15 +41,20 @@ export class OfferService {
     offeredByCourier: OfferedBy,
   ) {
     return this.offerRepository.findAndCount({
-      // select: {
-      //   courier:
-      // },
       where: {
         packageId,
         offeredByCourier: offeredByCourier === OfferedBy.COURIER,
         status: OfferStatus.pending,
       },
-      relations: ['courier', 'courier.user', 'courier.user.idImages'],
+      relations: [
+        'courier',
+        'courier.user',
+        'courier.user.idImages',
+        'courier.from',
+        'courier.from.country',
+        'courier.to',
+        'courier.to.country',
+      ],
     })
   }
 
@@ -58,9 +63,6 @@ export class OfferService {
     offeredByCourier: OfferedBy,
   ) {
     return this.offerRepository.findAndCount({
-      // select: {
-      //   courier:
-      // },
       where: {
         courierId,
         offeredByCourier: offeredByCourier === OfferedBy.COURIER,
@@ -71,6 +73,10 @@ export class OfferService {
         'package.images',
         'package.user',
         'package.user.idImages',
+        'package.from',
+        'package.from.country',
+        'package.to',
+        'package.to.country',
       ],
     })
   }
@@ -101,6 +107,17 @@ export class OfferService {
   changeStatus(offer: Offer, status: OfferStatus) {
     offer.status = status
     return this.offerRepository.save(offer)
+  }
+
+  async declinePendingsByPackage(pack: Package) {
+    const offers = await this.offerRepository.find({
+      where: {
+        packageId: pack.id,
+        status: OfferStatus.pending,
+      },
+    })
+    offers.map((offer) => (offer.status = OfferStatus.declined))
+    return this.offerRepository.save(offers)
   }
 
   async cancelOffersByPackageId(packageId: number) {
