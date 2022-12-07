@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-import { Not, Repository } from 'typeorm'
+import { IsNull, Not, Repository } from 'typeorm'
 
 import { Package } from '../../package/entities/package.entity'
 import { Courier } from '../../courier/entities/courier.entity'
@@ -42,8 +42,8 @@ export class OrderService {
     const count = await this.orderRepository.count({
       where: {
         courierId: courier.id,
-        deliveredDate: Not(null),
-        canceledDate: Not(null),
+        deliveredDate: IsNull(),
+        canceledDate: IsNull(),
       },
     })
 
