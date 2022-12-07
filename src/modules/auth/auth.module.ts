@@ -4,18 +4,12 @@ import { JwtModule } from '@nestjs/jwt'
 import { ConfigModule, ConfigService } from '@nestjs/config'
 import { FacebookAuthModule } from 'facebook-auth-nestjs'
 
-import { AuthController } from './auth.controller'
 import { UserModule } from './../user/user.module'
 import { SessionEntity } from './entities/session.entity'
 import { AuthResolver } from './auth.resolver'
 import { AuthService } from './services'
 import { SessionService } from './services/session.service'
-import {
-  FacebookStrategy,
-  GoogleStrategy,
-  JwtRefreshStrategy,
-  JwtStrategy,
-} from './strategies'
+import { JwtRefreshStrategy, JwtStrategy } from './strategies'
 import { RolesGuard } from './guards/role.guard'
 import { AuthGoogleModule } from './socials/auth-google/auth-google.module'
 
@@ -43,10 +37,7 @@ import { AuthGoogleModule } from './socials/auth-google/auth-google.module'
     JwtStrategy,
     JwtRefreshStrategy,
     RolesGuard,
-    GoogleStrategy,
-    FacebookStrategy,
   ],
-  controllers: [AuthController],
   exports: [AuthService],
 })
 export class AuthModule {}
