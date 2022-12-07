@@ -32,7 +32,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   }
 
   private async authorizeUser(payload: IJwtPayload): Promise<User> {
-    const user = await this.userService.findByEmail(payload.email)
+    const user = await this.userService.findById(payload.id)
 
     if (!user.idType || !user.idNumber || !user.idImages) {
       throw new ForbiddenError('Please fill in your ID data')

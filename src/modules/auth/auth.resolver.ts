@@ -1,5 +1,5 @@
 import { Args, Mutation, Resolver } from '@nestjs/graphql'
-import { OAuth2Client } from 'google-auth-library'
+// import { OAuth2Client } from 'google-auth-library'
 import { FacebookAuthService } from 'facebook-auth-nestjs'
 
 import { User } from './../user/entities/user.entity'
@@ -12,11 +12,6 @@ import {
 } from './decorators'
 import { ChangePasswordInputDto, RegisterInputDto } from './dto'
 import { IJwtPayload } from './interfaces'
-
-const client = new OAuth2Client(
-  process.env.GOOGLE_CLIENT_ID,
-  process.env.GOOGLE_CLIENT_SECRET,
-)
 
 @Resolver()
 export class AuthResolver {
@@ -35,20 +30,20 @@ export class AuthResolver {
     return this.authService.login(email, password)
   }
 
-  @Mutation()
-  async loginWithGoogle(@Args('token') token: string) {
-    const ticket = await client.verifyIdToken({
-      idToken: token,
-      audience: process.env.GOOGLE_CLIENT_ID,
-    })
-    // log the ticket payload in the console to see what we have
-    console.log(ticket.getPayload())
-  }
+  // @Mutation()
+  // async loginWithGoogle(@Args('token') token: string) {
+  //   const ticket = await client.verifyIdToken({
+  //     idToken: token,
+  //     audience: process.env.GOOGLE_CLIENT_ID,
+  //   })
+  //   // log the ticket payload in the console to see what we have
+  //   console.log(ticket.getPayload())
+  // }
 
-  @Mutation()
-  async loginWithFacebook(@Args('token') accessToken: string) {
-    await this.facebookAuthService.getUser(accessToken, 'id', 'name')
-  }
+  // @Mutation()
+  // async loginWithFacebook(@Args('token') accessToken: string) {
+  //   await this.facebookAuthService.getUser(accessToken, 'id', 'name')
+  // }
 
   @Mutation()
   @AuthUser()

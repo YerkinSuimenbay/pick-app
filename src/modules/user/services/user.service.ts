@@ -1,5 +1,3 @@
-import { SocialInterface } from './../../../../dist/modules/auth/socials/interfaces/social.interface copy.d'
-import { SocialProvider } from './../../auth/socials/enums/social-provider.enum'
 import {
   BadRequestException,
   forwardRef,
@@ -9,6 +7,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 
+import { SocialProvider } from './../../auth/socials/enums/social-provider.enum'
 import { UpdateAccountInputDto } from './../dto/update-account-input.dto'
 
 import { RegisterInputDto } from '../../auth/dto/register-input.dto'
@@ -16,6 +15,7 @@ import { AuthService } from '../../auth/services'
 import { User } from '../entities'
 import { FileService } from '../../file/file.service'
 import { StorageService } from '../../storage/storage.service'
+import { SocialInterface } from '../../auth/socials/interfaces'
 
 @Injectable()
 export class UserService {
@@ -26,6 +26,18 @@ export class UserService {
     private readonly fileService: FileService,
     private readonly storageService: StorageService,
   ) {}
+
+  findById(id: number) {
+    return this.userRepository.findOne({
+      where: { id },
+      relations: [
+        'idImages',
+        'favorites',
+        'favorites.idImages',
+        'profileImage',
+      ],
+    })
+  }
 
   findByEmail(email: string) {
     return this.userRepository.findOne({
